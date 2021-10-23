@@ -2,9 +2,10 @@
   "name": "pracadyplomowa",
   "version": "1.0.0",
   "description": "Projekt na pracę licencjacką",
-  "main": "app.js",
+  "main": "app.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start-dev": "nodemon app.ts"
   },
   "repository": {
     "type": "git",
@@ -20,5 +21,16 @@
   "bugs": {
     "url": "https://github.com/quqacz/pracaDyplomowa/issues"
   },
-  "homepage": "https://github.com/quqacz/pracaDyplomowa#readme"
+  "homepage": "https://github.com/quqacz/pracaDyplomowa#readme",
+  "devDependencies": {
+    "@types/express": "^4.17.13",
+    "@types/node": "^16.11.4",
+    "nodemon": "^2.0.14",
+    "ts-node": "^10.4.0",
+    "typescript": "^4.4.4"
+  },
+  "dependencies": {
+    "ejs": "^3.1.6",
+    "express": "^4.17.1"
+  }
 }

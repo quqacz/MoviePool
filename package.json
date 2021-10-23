@@ -1,0 +1,24 @@
+{
+  "name": "pracadyplomowa",
+  "version": "1.0.0",
+  "description": "Projekt na pracę licencjacką",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/quqacz/pracaDyplomowa.git"
+  },
+  "keywords": [
+    "movies",
+    "picker",
+    "cinema"
+  ],
+  "author": "Marcin Nowak",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/quqacz/pracaDyplomowa/issues"
+  },
+  "homepage": "https://github.com/quqacz/pracaDyplomowa#readme"
+}

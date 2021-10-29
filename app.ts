@@ -2,9 +2,8 @@ if(process.env.NODE_ENV !== 'production'){
     require('dotenv').config()
 }
 
-import express, { Request, Response} from "express";
-import { requestLogger } from "./middleware/requestLogger";
-import { registerValidator, loginValidator } from "./middleware/formsValidator";
+import express, { Request, Response} from "express"
+import { registerValidator, loginValidator } from "./middleware/formsValidator"
 
 const mongoose = require('mongoose')
 const app = express()
@@ -64,7 +63,7 @@ passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
 // routes
-app.get('/', requestLogger, (req: Request, res: Response)=>{
+app.get('/', (req: Request, res: Response)=>{
     res.render('index');
 })
 

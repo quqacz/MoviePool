@@ -4,7 +4,7 @@ if(process.env.NODE_ENV !== 'production'){
 
 import express, { Request, Response} from "express";
 import { requestLogger } from "./middleware/requestLogger";
-import { registerValidator } from "./middleware/formsValidator";
+import { registerValidator, loginValidator } from "./middleware/formsValidator";
 
 const mongoose = require('mongoose')
 const app = express()
@@ -70,6 +70,10 @@ app.get('/', requestLogger, (req: Request, res: Response)=>{
 
 app.get('/login', (req: Request, res: Response)=>{
     res.render('login')
+})
+
+app.post('/login', loginValidator, passport.authenticate('local', {failureRedirect: '/login'}), (req: Request, res: Response)=>{
+    res.redirect('/');
 })
 
 app.get('/register', (req: Request, res: Response)=>{

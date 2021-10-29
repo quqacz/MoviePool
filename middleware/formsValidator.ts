@@ -6,7 +6,14 @@ function registerValidator(req: Request, res: Response, next: NextFunction){
     }else{
       return res.redirect('/register');  
     }
-    
 }
 
-export { registerValidator }
+function loginValidator(req: Request, res: Response, next: NextFunction){
+    if(req.body.username && req.body.password){
+        next();
+    }else{
+      return res.redirect('/login');  
+    }
+}
+
+export { registerValidator, loginValidator }

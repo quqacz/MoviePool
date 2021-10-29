@@ -4,8 +4,9 @@
   "description": "Projekt na pracę licencjacką",
   "main": "app.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start-dev": "nodemon app.ts"
+    "run-dev": "nodemon app.ts",
+    "build": "npm install && cd ./public && npm install && cd ..",
+    "start": "npm run build && node app.ts"
   },
   "repository": {
     "type": "git",
@@ -30,7 +31,9 @@
     "typescript": "^4.4.4"
   },
   "dependencies": {
+    "dotenv": "^10.0.0",
     "ejs": "^3.1.6",
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "mongoose": "^6.0.12"
   }
 }

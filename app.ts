@@ -4,6 +4,7 @@ if(process.env.NODE_ENV !== 'production'){
 
 import express, { Request, Response} from "express";
 import { requestLogger } from "./middleware/requestLogger";
+import { registerValidator } from "./middleware/formsValidator";
 
 const mongoose = require('mongoose')
 const app = express()
@@ -75,10 +76,30 @@ app.get('/register', (req: Request, res: Response)=>{
     res.render('register')
 })
 
-app.post('/register', (req: Request, res: Response)=>{
-    const { name, lastName } = req.body;
-    console.log(name, lastName);
-    res.render('register')
+app.post('/register', registerValidator, async(req: Request, res: Response)=>{
+    try{
+        const { username, nickname, password } = req.body;
+        console.log(username, nickname, password);
+        const user = new User({username, nickname});
+        const regUser = await User.register(user, password);
+        console.log(regUser)
+        req.login(regUser, err=>{
+            if(err){
+                console.log(err)
+                res.redirect('/register')
+            }else{
+                res.redirect('/');
+            }
+        });
+    } catch(e){
+        console.log(e);
+        res.redirect('/register')
+    }
+})
+
+app.get('/logout', (req,res)=>{
+    req.logOut();
+    res.redirect('/');
 })
 
 app.get('/pool', (req: Request, res: Response)=>{

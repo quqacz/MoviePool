@@ -2,10 +2,11 @@ if(process.env.NODE_ENV !== 'production'){
     require('dotenv').config()
 }
 
-import { AxiosResponse } from "axios"
+import { AxiosError, AxiosResponse } from "axios"
 import express, { Request, Response} from "express"
 import { registerValidator, loginValidator, movieSearch } from "./middleware/formsValidator"
-import { ShortMovieInfo } from "./types/types"
+import { ShortMovieInfo, FullMovieInfo } from "./types/types"
+import { getMovieInfo } from './supportFunctions'
 
 const mongoose = require('mongoose')
 const app = express()
@@ -65,8 +66,41 @@ passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
 // routes
-app.get('/', (req: Request, res: Response)=>{
-    res.render('index');
+app.get('/', async(req: Request, res: Response)=>{
+    const options = {
+        method: 'GET',
+        url: 'https://imdb8.p.rapidapi.com/title/get-coming-soon-movies',
+        params: {homeCountry: 'US', purchaseCountry: 'US', currentCountry: 'US'},
+        headers: {
+          'x-rapidapi-host': process.env.X_HOST,
+          'x-rapidapi-key': process.env.X_KEY
+        }
+    };
+    const movies: FullMovieInfo[] = []
+    axios.request(options).then(function (response: AxiosResponse) {
+        
+        // console.log(response.data);
+        for(let i = 0; i < response.data.length; i++){
+            let id = response.data[i].id.split('/');
+            let parsedId = id[2];
+            const movie = getMovieInfo(parsedId, process.env.MOVIE_API_KEY || '')
+                .then((data: FullMovieInfo)=>{
+                    movies.push(data);
+                    // console.log(data)
+                })
+                .catch((err: AxiosError)=>{
+                    console.log('kutas')
+                    console.log(err)
+                })
+        }
+        console.log(movies.length);
+        res.json(movies);
+    }).catch(function (error: AxiosError) {
+        console.log('zewnętrzy request wyjebało w powietrze')
+        console.error(error);
+        res.send('index');
+    });
+    
 })
 
 app.get('/login', (req: Request, res: Response)=>{
@@ -84,10 +118,8 @@ app.get('/register', (req: Request, res: Response)=>{
 app.post('/register', registerValidator, async(req: Request, res: Response)=>{
     try{
         const { username, nickname, password } = req.body;
-        console.log(username, nickname, password);
         const user = new User({username, nickname});
         const regUser = await User.register(user, password);
-        console.log(regUser)
         req.login(regUser, err=>{
             if(err){
                 console.log(err)
@@ -118,7 +150,7 @@ app.post('/pool/add', movieSearch, async(req: Request, res: Response)=>{
         const movies: ShortMovieInfo[] = response.data
         res.json(response.data)
     })
-    .catch((error: any) => {
+    .catch((error: AxiosError) => {
         console.log(error);
         res.redirect('/pool')
     });

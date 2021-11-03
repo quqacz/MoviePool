@@ -2,8 +2,8 @@ if(process.env.NODE_ENV !== 'production'){
     require('dotenv').config()
 }
 
-import express, { Request, Response} from "express";
-import { requestLogger } from "./middleware/requestLogger";
+import express, { Request, Response} from "express"
+import { registerValidator, loginValidator } from "./middleware/formsValidator"
 
 const mongoose = require('mongoose')
 const app = express()
@@ -63,7 +63,7 @@ passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
 // routes
-app.get('/', requestLogger, (req: Request, res: Response)=>{
+app.get('/', (req: Request, res: Response)=>{
     res.render('index');
 })
 
@@ -71,14 +71,38 @@ app.get('/login', (req: Request, res: Response)=>{
     res.render('login')
 })
 
+app.post('/login', loginValidator, passport.authenticate('local', {failureRedirect: '/login'}), (req: Request, res: Response)=>{
+    res.redirect('/');
+})
+
 app.get('/register', (req: Request, res: Response)=>{
     res.render('register')
 })
 
-app.post('/register', (req: Request, res: Response)=>{
-    const { name, lastName } = req.body;
-    console.log(name, lastName);
-    res.render('register')
+app.post('/register', registerValidator, async(req: Request, res: Response)=>{
+    try{
+        const { username, nickname, password } = req.body;
+        console.log(username, nickname, password);
+        const user = new User({username, nickname});
+        const regUser = await User.register(user, password);
+        console.log(regUser)
+        req.login(regUser, err=>{
+            if(err){
+                console.log(err)
+                res.redirect('/register')
+            }else{
+                res.redirect('/');
+            }
+        });
+    } catch(e){
+        console.log(e);
+        res.redirect('/register')
+    }
+})
+
+app.get('/logout', (req,res)=>{
+    req.logOut();
+    res.redirect('/');
 })
 
 app.get('/pool', (req: Request, res: Response)=>{

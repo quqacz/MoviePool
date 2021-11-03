@@ -2,8 +2,10 @@ if(process.env.NODE_ENV !== 'production'){
     require('dotenv').config()
 }
 
+import { AxiosResponse } from "axios"
 import express, { Request, Response} from "express"
-import { registerValidator, loginValidator } from "./middleware/formsValidator"
+import { registerValidator, loginValidator, movieSearch } from "./middleware/formsValidator"
+import { ShortMovieInfo } from "./types/types"
 
 const mongoose = require('mongoose')
 const app = express()
@@ -11,9 +13,9 @@ const session = require('express-session')
 const passport = require('passport')
 const LocalStrategy = require('passport-local')
 const methodOverride = require('method-override')
+const axios = require('axios')
 
 // db models
-
 const User = require('./models/user')
 
 // .env constants
@@ -107,6 +109,19 @@ app.get('/logout', (req,res)=>{
 
 app.get('/pool', (req: Request, res: Response)=>{
     res.render('pool')
+})
+
+app.post('/pool/add', movieSearch, async(req: Request, res: Response)=>{
+    const { movieName } = req.body
+    axios.get(`http://www.omdbapi.com/?t=${movieName}&apikey=${process.env.MOVIE_API_KEY}&`)
+    .then((response: AxiosResponse) => {
+        const movies: ShortMovieInfo[] = response.data
+        res.json(response.data)
+    })
+    .catch((error: any) => {
+        console.log(error);
+        res.redirect('/pool')
+    });
 })
 
 app.get('/user/:id', (req: Request, res: Response)=>{

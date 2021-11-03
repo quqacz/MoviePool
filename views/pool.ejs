@@ -1,3 +1,7 @@
 <%- include ('partials/htmlHeader') %>
     <h1>POOL</h1>
+    <form action="/pool/add" method="post">
+        <input type="text" placeholder="Searched movie" name="movieName"> 
+        <button type="submit">Search</button> 
+    </form>
 <%- include ('partials/htmlFooter') %>

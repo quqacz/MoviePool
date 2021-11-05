@@ -1,3 +1,13 @@
 <%- include ('partials/htmlHeader') %>
     <h1>KUTAS</h1>
+    <% for(let i = 0; i < movies.length; i++){%>
+        <div>
+            <h3><%= movies[i].Title %></h3>
+            <h4><%= movies[i].Year%></h4>
+            <p><%= movies[i].Plot%></p>
+            <img src="<%= movies[i].Poster%>" alt="<%=movies[i].Title%> poster">
+        </div>
+        
+        <%= %>
+    <%}%>
 <%- include ('partials/htmlFooter') %>

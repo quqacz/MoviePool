@@ -5,8 +5,8 @@ if(process.env.NODE_ENV !== 'production'){
 import { AxiosError, AxiosResponse } from "axios"
 import express, { Request, Response} from "express"
 import { registerValidator, loginValidator, movieSearch } from "./middleware/formsValidator"
+import requestLoggerMiddleware from './middleware/requestLogger'
 import { ShortMovieInfo, FullMovieInfo } from "./types/types"
-import { getMovieInfo } from './supportFunctions'
 
 const mongoose = require('mongoose')
 const app = express()
@@ -65,6 +65,8 @@ passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
+app.use(requestLoggerMiddleware)
+
 // routes
 app.get('/', async(req: Request, res: Response)=>{
     const options = {
@@ -76,25 +78,19 @@ app.get('/', async(req: Request, res: Response)=>{
           'x-rapidapi-key': process.env.X_KEY
         }
     };
-    const movies: FullMovieInfo[] = []
-    axios.request(options).then(function (response: AxiosResponse) {
-        
-        // console.log(response.data);
-        for(let i = 0; i < response.data.length; i++){
+    const movies:any = []
+    axios.request(options).then(async function (response: AxiosResponse) {
+
+        for(let i = 0; i < response.data.length/6; i++){
             let id = response.data[i].id.split('/');
             let parsedId = id[2];
-            const movie = getMovieInfo(parsedId, process.env.MOVIE_API_KEY || '')
-                .then((data: FullMovieInfo)=>{
-                    movies.push(data);
-                    // console.log(data)
-                })
-                .catch((err: AxiosError)=>{
-                    console.log('kutas')
-                    console.log(err)
-                })
+            const movie = await axios.get(`http://www.omdbapi.com/?i=${parsedId}&apikey=${process.env.MOVIE_API_KEY}&`)
+            let data = movie.data;
+            // console.log(data);
+            movies.push(data);
+            
         }
-        console.log(movies.length);
-        res.json(movies);
+        res.render('index', {movies});
     }).catch(function (error: AxiosError) {
         console.log('zewnętrzy request wyjebało w powietrze')
         console.error(error);

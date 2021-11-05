@@ -86,11 +86,10 @@ app.get('/', async(req: Request, res: Response)=>{
             let parsedId = id[2];
             const movie = await axios.get(`http://www.omdbapi.com/?i=${parsedId}&apikey=${process.env.MOVIE_API_KEY}&`)
             let data = movie.data;
-            // console.log(data);
-            movies.push(data);
-            
+            movies.push(data);      
         }
         res.render('index', {movies});
+        // res.json(movies)
     }).catch(function (error: AxiosError) {
         console.log('zewnętrzy request wyjebało w powietrze')
         console.error(error);

@@ -1,46 +1,10 @@
 <%- include ('partials/htmlHeader') %>
-    <!-- <% for(let i = 0; i < movies.length; i++){%>
+    <% for(let i = 0; i < movies.length; i++){%>
         <div>
             <h3><%= movies[i].Title %></h3>
             <h4><%= movies[i].Year%></h4>
             <p><%= movies[i].Plot%></p>
             <img src="<%= movies[i].Poster%>" alt="<%=movies[i].Title%> poster">
         </div>
-    <%}%> -->
-
-
-<div class="container">
-    <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
-        <div class="carousel-indicators">
-            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="<%= movies[0].Title%>"></button>
-            <% for(let i = 1; i < movies.length; i++){%>
-                <div>
-                    <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="<%=i%>"aria-label="<%= movies[i].Title%>"></button>
-                </div>
-            <%}%>
-        </div>
-        <div class="carousel-inner">
-            <% for(let i = 0; i < movies.length; i++){%>
-                <div class="carousel-item">
-                    <img src="<%= movies[i].Poster%>" class="d-block w-100" alt="<%=movies[i].Title%> poster">
-                    <div class="carousel-caption d-none d-md-block">
-                        <h3><%= movies[i].Title %></h3>
-                        <h4><%= movies[i].Year%></h4>
-                        <p><%= movies[i].Plot%></p>
-                    </div>
-                  </div>
-            <%}%>
-        </div>
-        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Previous</span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Next</span>
-        </button>
-      </div>
-</div>
-    
-
+    <%}%>
 <%- include ('partials/htmlFooter') %>

@@ -4,6 +4,7 @@ if(process.env.NODE_ENV !== 'production'){
 
 import { AxiosError, AxiosResponse } from "axios"
 import express, { Request, Response} from "express"
+import { getUpcomingMovies } from "./apiRequests"
 import { registerValidator, loginValidator, movieSearch } from "./middleware/formsValidator"
 import requestLoggerMiddleware from './middleware/requestLogger'
 import { ShortMovieInfo, FullMovieInfo } from "./types/types"
@@ -18,6 +19,12 @@ const axios = require('axios')
 
 // db models
 const User = require('./models/user')
+
+// cash stuff to save api calls and reduce loading time 
+let MoviesCash = {
+    lastFetched: `${new Date().getFullYear}${new Date().getMonth}${new Date().getDay}`,
+    moviesDetails: ['']
+}
 
 // .env constants
 const port = process.env.PORT || 3000;
@@ -69,33 +76,20 @@ app.use(requestLoggerMiddleware)
 
 // routes
 app.get('/', async(req: Request, res: Response)=>{
-    const options = {
-        method: 'GET',
-        url: 'https://imdb8.p.rapidapi.com/title/get-coming-soon-movies',
-        params: {homeCountry: 'US', purchaseCountry: 'US', currentCountry: 'US'},
-        headers: {
-          'x-rapidapi-host': process.env.X_HOST,
-          'x-rapidapi-key': process.env.X_KEY
-        }
-    };
-    const movies:any = []
-    axios.request(options).then(async function (response: AxiosResponse) {
+    let requestTime = `${new Date().getFullYear}${new Date().getMonth}${new Date().getDay}`
 
-        for(let i = 0; i < response.data.length/6; i++){
-            let id = response.data[i].id.split('/');
+    if(requestTime !== MoviesCash.lastFetched || !MoviesCash.moviesDetails.length || MoviesCash.moviesDetails[0] === ''){
+        let ids = await getUpcomingMovies();
+        MoviesCash.moviesDetails.length = 0;
+        for(let i = 0; i < 10; i++){
+            let id = ids[i].id.split('/');
             let parsedId = id[2];
             const movie = await axios.get(`http://www.omdbapi.com/?i=${parsedId}&apikey=${process.env.MOVIE_API_KEY}&`)
             let data = movie.data;
-            movies.push(data);      
+            MoviesCash.moviesDetails.push(data); 
         }
-        res.render('index', {movies});
-        // res.json(movies)
-    }).catch(function (error: AxiosError) {
-        console.log('zewnętrzy request wyjebało w powietrze')
-        console.error(error);
-        res.send('index');
-    });
-    
+    }
+    res.render('index', {movies: MoviesCash.moviesDetails})
 })
 
 app.get('/login', (req: Request, res: Response)=>{
@@ -136,19 +130,6 @@ app.get('/logout', (req,res)=>{
 
 app.get('/pool', (req: Request, res: Response)=>{
     res.render('pool')
-})
-
-app.post('/pool/add', movieSearch, async(req: Request, res: Response)=>{
-    const { movieName } = req.body
-    axios.get(`http://www.omdbapi.com/?t=${movieName}&apikey=${process.env.MOVIE_API_KEY}&`)
-    .then((response: AxiosResponse) => {
-        const movies: ShortMovieInfo[] = response.data
-        res.json(response.data)
-    })
-    .catch((error: AxiosError) => {
-        console.log(error);
-        res.redirect('/pool')
-    });
 })
 
 app.get('/user/:id', (req: Request, res: Response)=>{

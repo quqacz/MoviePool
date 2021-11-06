@@ -2,8 +2,12 @@ if(process.env.NODE_ENV !== 'production'){
     require('dotenv').config()
 }
 
+import { AxiosError, AxiosResponse } from "axios"
 import express, { Request, Response} from "express"
-import { registerValidator, loginValidator } from "./middleware/formsValidator"
+import { getUpcomingMovies } from "./apiRequests"
+import { registerValidator, loginValidator, movieSearch } from "./middleware/formsValidator"
+import requestLoggerMiddleware from './middleware/requestLogger'
+import { ShortMovieInfo, FullMovieInfo } from "./types/types"
 
 const mongoose = require('mongoose')
 const app = express()
@@ -11,10 +15,16 @@ const session = require('express-session')
 const passport = require('passport')
 const LocalStrategy = require('passport-local')
 const methodOverride = require('method-override')
+const axios = require('axios')
 
 // db models
-
 const User = require('./models/user')
+
+// cash stuff to save api calls and reduce loading time 
+let MoviesCash = {
+    lastFetched: `${new Date().getFullYear}${new Date().getMonth}${new Date().getDay}`,
+    moviesDetails: ['']
+}
 
 // .env constants
 const port = process.env.PORT || 3000;
@@ -62,9 +72,24 @@ passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
+app.use(requestLoggerMiddleware)
+
 // routes
-app.get('/', (req: Request, res: Response)=>{
-    res.render('index');
+app.get('/', async(req: Request, res: Response)=>{
+    let requestTime = `${new Date().getFullYear}${new Date().getMonth}${new Date().getDay}`
+
+    if(requestTime !== MoviesCash.lastFetched || !MoviesCash.moviesDetails.length || MoviesCash.moviesDetails[0] === ''){
+        let ids = await getUpcomingMovies();
+        MoviesCash.moviesDetails.length = 0;
+        for(let i = 0; i < 10; i++){
+            let id = ids[i].id.split('/');
+            let parsedId = id[2];
+            const movie = await axios.get(`http://www.omdbapi.com/?i=${parsedId}&apikey=${process.env.MOVIE_API_KEY}&`)
+            let data = movie.data;
+            MoviesCash.moviesDetails.push(data); 
+        }
+    }
+    res.render('index', {movies: MoviesCash.moviesDetails})
 })
 
 app.get('/login', (req: Request, res: Response)=>{
@@ -82,10 +107,8 @@ app.get('/register', (req: Request, res: Response)=>{
 app.post('/register', registerValidator, async(req: Request, res: Response)=>{
     try{
         const { username, nickname, password } = req.body;
-        console.log(username, nickname, password);
         const user = new User({username, nickname});
         const regUser = await User.register(user, password);
-        console.log(regUser)
         req.login(regUser, err=>{
             if(err){
                 console.log(err)

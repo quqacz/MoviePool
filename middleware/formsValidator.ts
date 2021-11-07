@@ -24,7 +24,7 @@ function movieSearch(req: Request, res: Response, next: NextFunction){
     next()
   }else{
     console.log('no movie name was given')
-    return res.redirect('/pool')
+    return res.redirect('/poll')
   }
 }
 

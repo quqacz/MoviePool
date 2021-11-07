@@ -3,7 +3,7 @@ if(process.env.NODE_ENV !== 'production'){
 }
 
 import { AxiosError, AxiosResponse } from "axios"
-import express, { Request, Response} from "express"
+import express, { NextFunction, Request, Response} from "express"
 import { getUpcomingMovies } from "./apiRequests"
 import { registerValidator, loginValidator, movieSearch } from "./middleware/formsValidator"
 import requestLoggerMiddleware from './middleware/requestLogger'
@@ -28,7 +28,7 @@ let MoviesCash = {
 
 // .env constants
 const port = process.env.PORT || 3000;
-const dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/MoviePool'
+const dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/MoviePoll'
 
 // db setup
 mongoose.connect(dbUrl, {
@@ -73,6 +73,11 @@ passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
 app.use(requestLoggerMiddleware)
+
+app.use((req: Request, res: Response, next: NextFunction) => {
+    res.locals.currentUser = req.user;
+    next();
+})
 
 // routes
 app.get('/', async(req: Request, res: Response)=>{
@@ -128,8 +133,8 @@ app.get('/logout', (req,res)=>{
     res.redirect('/');
 })
 
-app.get('/pool', (req: Request, res: Response)=>{
-    res.render('pool')
+app.get('/poll', (req: Request, res: Response)=>{
+    res.render('poll')
 })
 
 app.get('/user/:id', (req: Request, res: Response)=>{

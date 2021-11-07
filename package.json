@@ -1,7 +1,7 @@
 {
-  "name": "pracadyplomowa",
+  "name": "moviepoll",
   "version": "1.0.0",
-  "description": "Projekt na pracę licencjacką",
+  "description": "Movie Poll",
   "main": "app.ts",
   "scripts": {
     "run-dev": "nodemon app.ts",

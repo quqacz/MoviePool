@@ -21,14 +21,12 @@ const axios = require('axios')
 
 // db models
 const User = require('./models/user')
-const MoviesCash = require('./models/upcomingMovies')
-const Movie = require('./models/movie')
 
 // cash stuff to save api calls and reduce loading time 
-// let MoviesCash = {
-//     lastFetched: `${new Date().getFullYear}${new Date().getMonth}${new Date().getDay}`,
-//     moviesDetails: ['']
-// }
+let MoviesCash = {
+    lastFetched: `${new Date().getFullYear}${new Date().getMonth}${new Date().getDay}`,
+    moviesDetails: ['']
+}
 
 // .env constants
 const port = process.env.PORT || 3000;
@@ -86,34 +84,20 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 
 // routes
 app.get('/', async(req: Request, res: Response)=>{
-    let requestTime = `${new Date().getFullYear}${new Date().getMonth}${new Date().getDay}`.toString()
-    const cashe = await MoviesCash.find({date: requestTime});
-    if(!cashe.length){
-        const newDayData = new MoviesCash({date: requestTime});
-        if(cashe.length === 0){
-            let ids = await getUpcomingMovies();
-            
-            for(let i = 0; i < ids.length; i++){
-                let id = ids[i].id.split('/');
-                let parsedId = id[2];
-                const movie = await axios.get(`http://www.omdbapi.com/?i=${parsedId}&apikey=${process.env.MOVIE_API_KEY}&`)
-                let data = movie.data;
-                const newMovie = new Movie({
-                    imdbId: data.imdbID,
-                    year: data.Year,
-                    poster: data.Poster,
-                    plot: data.Plot
-                })
-                const savedMovie = await newMovie.save();
-                newDayData.movies.push(newMovie)
-            }
-            const upMovies = await newDayData.save();
+    let requestTime = `${new Date().getFullYear}${new Date().getMonth}${new Date().getDay}`
+
+    if(requestTime !== MoviesCash.lastFetched || !MoviesCash.moviesDetails.length || MoviesCash.moviesDetails[0] === ''){
+        let ids = await getUpcomingMovies();
+        MoviesCash.moviesDetails.length = 0;
+        for(let i = 0; i < 10; i++){
+            let id = ids[i].id.split('/');
+            let parsedId = id[2];
+            const movie = await axios.get(`http://www.omdbapi.com/?i=${parsedId}&apikey=${process.env.MOVIE_API_KEY}&`)
+            let data = movie.data;
+            MoviesCash.moviesDetails.push(data); 
         }
-        console.log(newDayData.movies);
-        res.render('index', {movies: newDayData.movies})
-    }else{
-        res.render('index', {movies: cashe.movies})
     }
+    res.render('index', {movies: MoviesCash.moviesDetails})
 })
 
 app.use('', Auth);

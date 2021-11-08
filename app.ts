@@ -9,6 +9,11 @@ import { registerValidator, loginValidator, movieSearch } from "./middleware/for
 import requestLoggerMiddleware from './middleware/requestLogger'
 import { ShortMovieInfo, FullMovieInfo } from "./types/types"
 
+import Auth from "./routes/auth"
+import Poll from "./routes/poll"
+import Users from "./routes/user"
+import Other from "./routes/other"
+
 const mongoose = require('mongoose')
 const app = express()
 const session = require('express-session')
@@ -72,6 +77,7 @@ passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
+// other required stuff
 app.use(requestLoggerMiddleware)
 
 app.use((req: Request, res: Response, next: NextFunction) => {
@@ -97,49 +103,10 @@ app.get('/', async(req: Request, res: Response)=>{
     res.render('index', {movies: MoviesCash.moviesDetails})
 })
 
-app.get('/login', (req: Request, res: Response)=>{
-    res.render('login')
-})
-
-app.post('/login', loginValidator, passport.authenticate('local', {failureRedirect: '/login'}), (req: Request, res: Response)=>{
-    res.redirect('/');
-})
-
-app.get('/register', (req: Request, res: Response)=>{
-    res.render('register')
-})
-
-app.post('/register', registerValidator, async(req: Request, res: Response)=>{
-    try{
-        const { username, nickname, password } = req.body;
-        const user = new User({username, nickname});
-        const regUser = await User.register(user, password);
-        req.login(regUser, err=>{
-            if(err){
-                console.log(err)
-                res.redirect('/register')
-            }else{
-                res.redirect('/');
-            }
-        });
-    } catch(e){
-        console.log(e);
-        res.redirect('/register')
-    }
-})
-
-app.get('/logout', (req,res)=>{
-    req.logOut();
-    res.redirect('/');
-})
-
-app.get('/poll', (req: Request, res: Response)=>{
-    res.render('poll')
-})
-
-app.get('/user/:id', (req: Request, res: Response)=>{
-    res.render('userProfile')
-})
+app.use('', Auth);
+app.use('/poll', Poll)
+app.use('/user', Users)
+app.use('', Other)
 
 app.listen(port, ()=>{
     console.log(`app runs on port ${port}`);

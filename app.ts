@@ -2,12 +2,9 @@ if(process.env.NODE_ENV !== 'production'){
     require('dotenv').config()
 }
 
-import { AxiosError, AxiosResponse } from "axios"
 import express, { NextFunction, Request, Response} from "express"
 import { getUpcomingMovies } from "./apiRequests"
-import { registerValidator, loginValidator, movieSearch } from "./middleware/formsValidator"
 import requestLoggerMiddleware from './middleware/requestLogger'
-import { ShortMovieInfo, FullMovieInfo } from "./types/types"
 
 import Auth from "./routes/auth"
 import Poll from "./routes/poll"

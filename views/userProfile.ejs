@@ -6,6 +6,18 @@
         <p><%= user.friends[i].username%></p>
         <p><%= user.friends[i].nickname%></p>
     <%}%>
+    <form action="/user/<%=user._id%>/find" method="post">
+        <input type="text" placeholder="User nickname" name='friendName'>
+        <button type="submit">Search</button>
+    </form>
+    <%if(friend){%>
+        <hr>
+        <h3><%= friend.username%></h3>
+        <h3><%= friend.nickname%></h3>
+        <form action="/user/<%=user._id%>/add/<%=friend._id%>" method="post">
+            <button type="submit">Add Friend</button>
+        </form>
+    <%}%>
     <hr>
     <%for(let i = 0; i < user.polls.length; i++){%>
         <p><%= user.polls[i].data%></p>

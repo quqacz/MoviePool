@@ -1,3 +1,14 @@
 <%- include ('partials/htmlHeader') %>
     <h1>PROFILE USER OR SOME OTHER SHIT</h1>
+    <h3><%= user.username%></h3>
+    <h3><%= user.nickname%></h3>
+    <%for(let i = 0; i < user.friends.length; i++){%>
+        <p><%= user.friends[i].username%></p>
+        <p><%= user.friends[i].nickname%></p>
+    <%}%>
+    <hr>
+    <%for(let i = 0; i < user.polls.length; i++){%>
+        <p><%= user.polls[i].data%></p>
+        <p><%= user.polls[i].entryCode%></p>
+    <%}%>
 <%- include ('partials/htmlFooter') %>

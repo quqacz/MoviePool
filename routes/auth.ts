@@ -28,7 +28,7 @@ Auth.post('/register', registerValidator, async(req: Request, res: Response)=>{
                 console.log(err)
                 res.redirect('/register')
             }else{
-                res.redirect('/');
+                res.redirect('/user/'+regUser._id);
             }
         });
     } catch(e){

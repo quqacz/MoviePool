@@ -1,0 +1,16 @@
+<%- include ('partials/htmlHeader') %>
+    <div class="container">
+        <h1>You have <%= currentUser.notifications %> friend request<%=currentUser.notifications > 1 ? 's' : ''%></h1>
+        <% for(let i = 0; i < nots.length; i++){%>
+            <div>
+                <h4>
+                    <strong><%=nots[i].from.nickname%></strong> sent you frind request 
+                    <a href="/user/<%=currentUser._id%>/accept/<%=nots[i].from._id%>">
+                        <strong>ACCEPT</strong>
+                    </a>
+                </h4>
+            </div>
+        <%}%>
+    </div>
+   
+<%- include ('partials/htmlFooter') %>

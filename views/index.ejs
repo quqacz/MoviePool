@@ -1,10 +1,13 @@
 <%- include ('partials/htmlHeader') %>
-    <% for(let i = 0; i < movies.length; i++){%>
-        <div>
-            <h3><%= movies[i].Title %></h3>
-            <h4><%= movies[i].Year%></h4>
-            <p><%= movies[i].Plot%></p>
-            <img src="<%= movies[i].Poster%>" alt="<%=movies[i].Title%> poster">
-        </div>
-    <%}%>
+    <div class="container">
+        <h1>MAIN PAGE FELLOW HUMANS</h1>
+        <% for(let i = 0; i < movies.length; i++){%>
+            <div>
+                <h3><%= movies[i].Title %></h3>
+                <h4><%= movies[i].Year%></h4>
+                <p><%= movies[i].Plot%></p>
+                <img src="<%= movies[i].Poster%>" alt="<%=movies[i].Title%> poster">
+            </div>
+        <%}%>
+    </div>
 <%- include ('partials/htmlFooter') %>

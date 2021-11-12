@@ -21,6 +21,7 @@ const axios = require('axios')
 
 // db models
 const User = require('./models/user')
+const FriendRequest = require('./models/friendRequest')
 
 // cash stuff to save api calls and reduce loading time 
 let MoviesCash = {
@@ -77,8 +78,12 @@ passport.deserializeUser(User.deserializeUser());
 // other required stuff
 app.use(requestLoggerMiddleware)
 
-app.use((req: Request, res: Response, next: NextFunction) => {
+app.use(async (req: Request, res: Response, next: NextFunction) => {
     res.locals.currentUser = req.user;
+    if(res.locals.currentUser){
+        let nots = await FriendRequest.find({to: res.locals.currentUser._id, accepted: false})
+        res.locals.currentUser.notifications = nots.length
+    }
     next();
 })
 

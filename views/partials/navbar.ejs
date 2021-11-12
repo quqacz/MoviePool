@@ -23,11 +23,18 @@
               <a class="nav-link active" aria-current="page" href="/register">Register</a>
             </li>
           <%}else{%>
-            <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="/user/<%=currentUser._id%>">Profile</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="/logout">Logout</a>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="/user/<%=currentUser._id%>" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <%=currentUser.nickname%>
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li><a class="dropdown-item" href="/user/<%=currentUser._id%>">Profile</a></li>
+                <li><a class="dropdown-item" href="/user/<%=currentUser._id%>/notification">Notifications <span> <%= currentUser.notifications %> </span> </a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li class="nav-item">
+                  <a class="dropdown-item" aria-current="page" href="/logout">Logout</a>
+                </li>
+              </ul>
             </li>
           <%}%>
         </ul>

@@ -1,3 +1,30 @@
 <%- include ('partials/htmlHeader') %>
+<div class="container">
     <h1>PROFILE USER OR SOME OTHER SHIT</h1>
+    <h3><%= user.username%></h3>
+    <h3><%= user.nickname%></h3>
+    <%for(let i = 0; i < user.friends.length; i++){%>
+        <p><%= user.friends[i].username%></p>
+        <p><%= user.friends[i].nickname%></p>
+    <%}%>
+    <form action="/user/<%=user._id%>/find" method="post">
+        <input type="text" placeholder="User nickname" name='friendName'>
+        <button type="submit">Search</button>
+    </form>
+    <%if(friends){%>
+        <%for(let i = 0; i < friends.length; i++){%>
+            <hr>
+            <h3><%= friends[i].username%></h3>
+            <h3><%= friends[i].nickname%></h3>
+            <form action="/user/<%=user._id%>/add/<%=friends[i]._id%>" method="post">
+                <button type="submit">Add Friend</button>
+            </form>
+        <%}%>
+    <%}%>
+    <hr>
+    <%for(let i = 0; i < user.polls.length; i++){%>
+        <p><%= user.polls[i].data%></p>
+        <p><%= user.polls[i].entryCode%></p>
+    <%}%>
+</div>
 <%- include ('partials/htmlFooter') %>

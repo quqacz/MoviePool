@@ -81,7 +81,7 @@ app.use(requestLoggerMiddleware)
 app.use(async (req: Request, res: Response, next: NextFunction) => {
     res.locals.currentUser = req.user;
     if(res.locals.currentUser){
-        let nots = await FriendRequest.find({to: res.locals.currentUser._id})
+        let nots = await FriendRequest.find({to: res.locals.currentUser._id, accepted: false})
         res.locals.currentUser.notifications = nots.length
     }
     next();

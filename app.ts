@@ -13,11 +13,15 @@ import Other from "./routes/other"
 
 const mongoose = require('mongoose')
 const app = express()
+const http = require('http')
+const server = http.createServer(app)
 const session = require('express-session')
 const passport = require('passport')
 const LocalStrategy = require('passport-local')
 const methodOverride = require('method-override')
 const axios = require('axios')
+const { Server } = require('socket.io')
+const io = new Server(server)
 
 // db models
 const User = require('./models/user')
@@ -87,6 +91,9 @@ app.use(async (req: Request, res: Response, next: NextFunction) => {
     next();
 })
 
+// socket connection
+const socketConnetions = require('./socket')(io);
+
 // routes
 app.get('/', async(req: Request, res: Response)=>{
     let requestTime = `${new Date().getFullYear}${new Date().getMonth}${new Date().getDay}`
@@ -110,6 +117,6 @@ app.use('/poll', Poll)
 app.use('/user', Users)
 app.use('', Other)
 
-app.listen(port, ()=>{
+server.listen(port, ()=>{
     console.log(`app runs on port ${port}`);
 })

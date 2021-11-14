@@ -1,10 +1,13 @@
 <%- include ('partials/htmlHeader') %>
 <div class="container">
     <h1>POOL</h1>
-    <form action="/pool/add" method="post">
-        <input type="text" placeholder="Searched movie" name="movieName"> 
-        <button type="submit">Search</button> 
-    </form>
+    <input type="text" placeholder="Searched movie" name="movieName" id="movieName"> 
+    <button type="button" onclick="getMovies()">Search</button> 
+    <div id="moviesWrapper">
+
+    </div>
 </div>  
 <%- include ('partials/socketConnection') %>
+<script src="/js/moviesFetch.js"></script>
+<script src="/js/pollRoomSocket.js"></script>
 <%- include ('partials/htmlFooter') %>

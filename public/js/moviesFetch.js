@@ -5,7 +5,6 @@ function getMovies(){
 }
 
 function renderMovies(movies){
-    resetMoviesRender()
     for(let i = 0; i < movies.length; i++){
         let wrap = document.createElement('div')
 
@@ -29,7 +28,6 @@ function renderMovies(movies){
 }
 
 function renderError(arg){
-    resetMoviesRender()
     let wrap = document.createElement('div')
     let p = document.createElement('p')
     p.textContent = arg;
@@ -39,4 +37,44 @@ function renderError(arg){
 
 function resetMoviesRender(){
     moviesWrapper.innerHTML = ''
+}
+
+function showNumberOfMovies(number, movieName){
+    let wrap = document.createElement('div')
+    let h = document.createElement('h3')
+    h.innerHTML = `There ${number === 1 ?  'is one movie': 'are '+number+' movies '} for fraze "${movieName}"`
+    wrap.appendChild(h)
+    moviesWrapper.appendChild(wrap)
+}
+
+function renderPagination(total, movieName, page = 1){
+    let wrap = document.createElement('div')
+
+    let innerWrap = document.createElement('div')
+    innerWrap.classList.add('container')
+
+    if(page > 1){
+        let prev = document.createElement('button')
+        prev.innerHTML = '<'
+        prev.addEventListener('click', function(){
+            socket.emit('fetchMoreMovies', movieName, page - 1)
+        })
+        innerWrap.appendChild(prev)
+    }
+    if(page !== 1 && page !== Math.ceil(total / 10)){
+        let current = document.createElement('button')
+        current.innerHTML = page
+        innerWrap.appendChild(current)
+    }
+    if(page < Math.ceil(total / 10)){
+        let next = document.createElement('button')
+        next.innerHTML = '>'
+        next.addEventListener('click', function(){
+            socket.emit('fetchMoreMovies', movieName, page + 1)
+        })
+        innerWrap.appendChild(next)
+    }
+
+    wrap.appendChild(innerWrap)
+    moviesWrapper.appendChild(wrap)
 }

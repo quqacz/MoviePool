@@ -1,6 +1,4 @@
-import { Request, Response, NextFunction } from 'express'
-
-export default function requestLoggerMiddleware(req: Request, res: Response, next: NextFunction){
+module.exports.requestLoggerMiddleware = function(req, res, next){
     // console.info(`${req.method}, ${req.originalUrl}`);
     const start = new Date().getTime();
     

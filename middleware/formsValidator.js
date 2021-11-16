@@ -1,6 +1,5 @@
-import { Request, Response, NextFunction } from "express";
 
-function registerValidator(req: Request, res: Response, next: NextFunction){
+module.exports.registerValidator = (req, res, next) =>{
   if(req.body.username && req.body.nickname && req.body.password){
       next();
   }else{
@@ -10,7 +9,7 @@ function registerValidator(req: Request, res: Response, next: NextFunction){
   }
 }
 
-function loginValidator(req: Request, res: Response, next: NextFunction){
+module.exports.loginValidator = (req, res, next) =>{
   if(req.body.username && req.body.password){
       next();
   }else{
@@ -19,7 +18,7 @@ function loginValidator(req: Request, res: Response, next: NextFunction){
   }
 }
 
-function movieSearch(req: Request, res: Response, next: NextFunction){
+module.exports.movieSearch = (req, res, next) =>{
   if(req.body.movieName){
     next()
   }else{
@@ -27,5 +26,3 @@ function movieSearch(req: Request, res: Response, next: NextFunction){
     return res.redirect('/poll')
   }
 }
-
-export { registerValidator, loginValidator, movieSearch }

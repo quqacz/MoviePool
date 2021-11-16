@@ -1,24 +1,24 @@
-import express, {Request, Response, NextFunction } from 'express'
-import { loginValidator, registerValidator } from '../middleware/formsValidator'
+const express = require('express')
+const { loginValidator, registerValidator } = require('../middleware/formsValidator')
 
 const passport = require('passport')
 const Auth = express()
 
 const User = require('../models/user')
 
-Auth.get('/login', (req: Request, res: Response)=>{
+Auth.get('/login', (req, res)=>{
     res.render('login')
 })
 
-Auth.post('/login', loginValidator, passport.authenticate('local', {failureRedirect: '/login'}), (req: Request, res: Response)=>{
+Auth.post('/login', loginValidator, passport.authenticate('local', {failureRedirect: '/login'}), (req, res)=>{
     res.redirect('/');
 })
 
-Auth.get('/register', (req: Request, res: Response)=>{
+Auth.get('/register', (req, res)=>{
     res.render('register')
 })
 
-Auth.post('/register', registerValidator, async(req: Request, res: Response)=>{
+Auth.post('/register', registerValidator, async(req, res)=>{
     try{
         const { username, nickname, password } = req.body;
         const user = new User({username, nickname});
@@ -37,9 +37,9 @@ Auth.post('/register', registerValidator, async(req: Request, res: Response)=>{
     }
 })
 
-Auth.get('/logout', (req: Request, res: Response)=>{
+Auth.get('/logout', (req, res)=>{
     req.logOut();
     res.redirect('/');
 })
 
-export default Auth 
+module.exports = Auth 

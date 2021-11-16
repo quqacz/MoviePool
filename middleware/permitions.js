@@ -1,13 +1,11 @@
-import { Request, Response, NextFunction } from "express"
-
-function isLoggedIn(req: Request, res: Response, next: NextFunction){
+module.exports.isLoggedIn = (req, res, next)=>{
     if(!req.isAuthenticated()){
         return res.redirect('/login');
     }
     next();
 }
 
-function isUser(req: Request, res: Response, next: NextFunction){
+module.exports.isUser = (req, res, next)=>{
     if(!res.locals.currentUser){
         return res.redirect('/login')
     }else{
@@ -18,9 +16,3 @@ function isUser(req: Request, res: Response, next: NextFunction){
         }
     }
 }
-
-async function alreadyFriends(req: Request, res: Response, next: NextFunction){
-
-}
-
-export { isLoggedIn, isUser, alreadyFriends}

@@ -2,9 +2,9 @@
   "name": "moviepoll",
   "version": "1.0.0",
   "description": "Movie Poll",
-  "main": "app.ts",
+  "main": "app.js",
   "scripts": {
-    "run-dev": "nodemon app.ts",
+    "run-dev": "nodemon app.js",
     "build": "npm install && cd ./public && npm install && cd ..",
     "start": "node app.ts"
   },

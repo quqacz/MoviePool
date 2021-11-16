@@ -2,14 +2,14 @@ if(process.env.NODE_ENV !== 'production'){
     require('dotenv').config()
 }
 
-import express, { NextFunction, Request, Response} from "express"
-import { getUpcomingMovies } from "./apiRequests"
-import requestLoggerMiddleware from './middleware/requestLogger'
+const express = require("express")
+const { getUpcomingMovies } = require("./apiRequests")
+const requestLoggerMiddleware = require('./middleware/requestLogger')
 
-import Auth from "./routes/auth"
-import Poll from "./routes/poll"
-import Users from "./routes/user"
-import Other from "./routes/other"
+const Auth = require("./routes/auth")
+const Poll = require("./routes/poll")
+const Users = require("./routes/user")
+const Other = require("./routes/other")
 
 const mongoose = require('mongoose')
 const app = express()
@@ -80,9 +80,19 @@ passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
 // other required stuff
-app.use(requestLoggerMiddleware)
+app.use(function(req, res, next){
+    // console.info(`${req.method}, ${req.originalUrl}`);
+    const start = new Date().getTime();
+    
+    res.on('finish', ()=>{
+        const elapsed = new Date().getTime() - start;
+        console.info(`method: ${req.method}, url: ${req.originalUrl}, code: ${res.statusCode}, time: ${elapsed}ms`)  
+    })
+    next();
+    }
+)
 
-app.use(async (req: Request, res: Response, next: NextFunction) => {
+app.use(async (req, res, next) => {
     res.locals.currentUser = req.user;
     if(res.locals.currentUser){
         let nots = await FriendRequest.find({to: res.locals.currentUser._id, accepted: false})
@@ -95,7 +105,7 @@ app.use(async (req: Request, res: Response, next: NextFunction) => {
 const socketConnetions = require('./socket')(io);
 
 // routes
-app.get('/', async(req: Request, res: Response)=>{
+app.get('/', async(req, res)=>{
     let requestTime = `${new Date().getFullYear}${new Date().getMonth}${new Date().getDay}`
 
     if(requestTime !== MoviesCash.lastFetched || !MoviesCash.moviesDetails.length || MoviesCash.moviesDetails[0] === ''){

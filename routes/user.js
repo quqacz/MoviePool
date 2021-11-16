@@ -1,10 +1,10 @@
-import express, {Request, Response, NextFunction } from 'express'
-import { isLoggedIn, isUser } from '../middleware/permitions'
+const express = require('express')
+const { isLoggedIn, isUser } = require('../middleware/permitions')
 const User = require('../models/user')
 const FriendRequest = require('../models/friendRequest')
 const Users = express()
 
-Users.get('/:id', isLoggedIn, isUser, async (req: Request, res: Response)=>{
+Users.get('/:id', isLoggedIn, isUser, async (req, res)=>{
     try{
         const user = await User.findOne({_id: req.params.id}).populate('friends').populate('polls');
         res.render('userProfile', {user, friends: undefined})
@@ -14,7 +14,7 @@ Users.get('/:id', isLoggedIn, isUser, async (req: Request, res: Response)=>{
     }
 })
 
-Users.post('/:id/find', isLoggedIn, isUser, async (req: Request, res: Response)=>{
+Users.post('/:id/find', isLoggedIn, isUser, async (req, res)=>{
     try{
         const { friendName } = req.body
         const user = await User.findOne({_id: req.params.id}).populate('friends').populate('polls');
@@ -26,7 +26,7 @@ Users.post('/:id/find', isLoggedIn, isUser, async (req: Request, res: Response)=
     }
 })
 
-Users.get('/:id/notification', isLoggedIn, isUser, async (req: Request, res: Response)=>{
+Users.get('/:id/notification', isLoggedIn, isUser, async (req, res)=>{
     try{
         const nots = await FriendRequest.find({to: req.params.id, accepted: false}).populate('from').populate('to');
         res.render('userProfileNotification', {nots})
@@ -36,7 +36,7 @@ Users.get('/:id/notification', isLoggedIn, isUser, async (req: Request, res: Res
     }
 })
 
-Users.post('/:id/add/:friendId', isLoggedIn, isUser, async (req: Request, res: Response)=>{
+Users.post('/:id/add/:friendId', isLoggedIn, isUser, async (req, res)=>{
     try{
         const take1 = await FriendRequest.findOne({to: req.params.id, from: req.params.friendId})
         const take2 = await FriendRequest.findOne({to: req.params.friendId, from: req.params.id})
@@ -53,7 +53,7 @@ Users.post('/:id/add/:friendId', isLoggedIn, isUser, async (req: Request, res: R
     }
 })
 
-Users.get('/:id/accept/:friendId', isLoggedIn, isUser, async (req: Request, res: Response)=>{
+Users.get('/:id/accept/:friendId', isLoggedIn, isUser, async (req, res)=>{
     try{
         const request = await FriendRequest.findOne({to: req.params.id, from: req.params.friendId})
         if(request){
@@ -76,4 +76,4 @@ Users.get('/:id/accept/:friendId', isLoggedIn, isUser, async (req: Request, res:
     }
 })
 
-export default Users
+module.exports = Users

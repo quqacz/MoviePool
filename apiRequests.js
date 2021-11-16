@@ -1,6 +1,6 @@
 const axios = require('axios')
 
-async function getUpcomingMovies(){
+module.exports.getUpcomingMovies = async function getUpcomingMovies(){
     const options = {
         method: 'GET',
         url: 'https://imdb8.p.rapidapi.com/title/get-coming-soon-movies',
@@ -13,5 +13,3 @@ async function getUpcomingMovies(){
     const ids = await axios.request(options)
     return ids.data
 }
-
-export { getUpcomingMovies }

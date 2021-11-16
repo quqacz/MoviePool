@@ -6,7 +6,7 @@
   "scripts": {
     "run-dev": "nodemon app.js",
     "build": "npm install && cd ./public && npm install && cd ..",
-    "start": "node app.ts"
+    "start": "node app.js"
   },
   "repository": {
     "type": "git",

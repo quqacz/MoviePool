@@ -1,6 +1,7 @@
 <%- include ('partials/htmlHeader') %>
 <div class="container">
     <h1>POOL</h1>
+    <h3><%= poll.entryCode %></h3>
     <input type="text" placeholder="Searched movie" name="movieName" id="movieName"> 
     <button type="button" onclick="getMovies()">Search</button> 
     <div id="moviesWrapper">

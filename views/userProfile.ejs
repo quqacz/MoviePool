@@ -22,9 +22,15 @@
         <%}%>
     <%}%>
     <hr>
-    <%for(let i = 0; i < user.polls.length; i++){%>
-        <p><%= user.polls[i].data%></p>
-        <p><%= user.polls[i].entryCode%></p>
+    <%for(let i = 0; i < polls.length; i++){%>
+        <p><%= polls[i].data%></p>
+        <%if(!polls[i].finished){%>
+            <p>Entry code <%= polls[i].entryCode%></p>
+        <%}else{%>
+            <p>Winner <%= polls[i].winner.imdbId%></p>
+        <%}%>
+        <p>Number of movies <%= polls[i].movies.length%></p>
+        <p>Number of voters <%= polls[i].voters.length%></p>
     <%}%>
 </div>
 <%- include ('partials/htmlFooter') %>

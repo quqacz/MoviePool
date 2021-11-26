@@ -6,7 +6,6 @@ const UserSchema = new Schema({
     username: { type: String, reqired: true},
     nickname: { type: String, reqired: true},
     friends: [{type: Schema.Types.ObjectId, ref: 'User'}],
-    polls: [[{type: Schema.Types.ObjectId, ref: 'Poll'}]]
 });
 
 UserSchema.plugin(passportLocalMongoose);

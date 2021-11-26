@@ -1,13 +1,18 @@
 import express, {Request, Response, NextFunction } from 'express'
 import { isLoggedIn, isUser } from '../middleware/permitions'
 const User = require('../models/user')
+const Poll = require('../models/poll')
 const FriendRequest = require('../models/friendRequest')
 const Users = express()
 
 Users.get('/:id', isLoggedIn, isUser, async (req: Request, res: Response)=>{
     try{
-        const user = await User.findOne({_id: req.params.id}).populate('friends').populate('polls');
-        res.render('userProfile', {user, friends: undefined})
+        const user = await User.findOne({_id: req.params.id}).populate('friends');
+        const polls = await Poll.find({$or: [
+            {host: req.params.id},
+            {voters: {$in: [ req.params.id ]}}
+        ]})
+        res.render('userProfile', {user, friends: undefined, polls})
     }catch(e){
         console.log(e)
         res.redirect('/');
@@ -17,9 +22,12 @@ Users.get('/:id', isLoggedIn, isUser, async (req: Request, res: Response)=>{
 Users.post('/:id/find', isLoggedIn, isUser, async (req: Request, res: Response)=>{
     try{
         const { friendName } = req.body
-        const user = await User.findOne({_id: req.params.id}).populate('friends').populate('polls');
-        const friends = await User.find({nickname: {"$regex": friendName, $nin: [user.nickname]}, _id: {$nin: user.friends}})
-        res.render('userProfile', {user, friends})
+        const user = await User.findOne({_id: req.params.id}).populate('friends');
+        const friends = await User.find({
+            nickname: {"$regex": friendName, $nin: [user.nickname]},
+             _id: {$nin: user.friends}}
+            )
+        res.render('userProfile', {user, friends, polls: undefined})
     }catch(e){
         console.log(e)
         res.redirect('/');

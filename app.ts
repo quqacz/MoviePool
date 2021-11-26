@@ -7,7 +7,7 @@ import { getUpcomingMovies } from "./apiRequests"
 import requestLoggerMiddleware from './middleware/requestLogger'
 
 import Auth from "./routes/auth"
-import Poll from "./routes/poll"
+import Polls from "./routes/poll"
 import Users from "./routes/user"
 import Other from "./routes/other"
 
@@ -113,7 +113,7 @@ app.get('/', async(req: Request, res: Response)=>{
 })
 
 app.use('', Auth);
-app.use('/poll', Poll)
+app.use('/poll', Polls)
 app.use('/user', Users)
 app.use('', Other)
 

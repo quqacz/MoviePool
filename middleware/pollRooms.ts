@@ -19,7 +19,6 @@ async function validateEntry(req: Request, res: Response, next: NextFunction){
                 {host: res.locals.currentUser._id}
             ]    
         })
-        console.log(poll)
         if(poll){
             next()
         }else{

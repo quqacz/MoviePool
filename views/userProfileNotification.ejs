@@ -1,12 +1,22 @@
 <%- include ('partials/htmlHeader') %>
     <div class="container">
-        <h1>You have <%= currentUser.notifications %> friend request<%=currentUser.notifications > 1 ? 's' : ''%></h1>
+        <h1>You have <%= currentUser.notifications %> notification<%=currentUser.notifications > 1 ? 's' : ''%></h1>
         <% for(let i = 0; i < nots.length; i++){%>
             <div>
                 <h4>
                     <strong><%=nots[i].from.nickname%></strong> sent you frind request 
                     <a href="/user/<%=currentUser._id%>/accept/<%=nots[i].from._id%>">
                         <strong>ACCEPT</strong>
+                    </a>
+                </h4>
+            </div>
+        <%}%>
+        <%for(let i = 0; i < invs.length; i++){%>
+            <div>
+                <h4>
+                    <strong><%=invs[i].from.nickname%></strong> invited you to poll room 
+                    <a href="/poll/<%=currentUser._id%>/accept/<%=invs[i].from._id%>">
+                        <strong>JOIN POLL</strong>
                     </a>
                 </h4>
             </div>

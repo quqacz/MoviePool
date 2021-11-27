@@ -25,14 +25,14 @@ exports = module.exports = function(io: Socket){
                 })
         })
 
-        socket.on('sendRoomInvite', (friendId: string, roomId: string)=>{
+        socket.on('sendRoomInvite', (friendId: string, roomId: string, hostId: string)=>{
             try{
                 RoomInvite.findOne({room: roomId, to: friendId}, (err:any, invite:any)=>{
                     if(err){
                         console.log(err)
                     }
                     if(!invite){
-                        const invite = new RoomInvite({room: roomId, to: friendId})
+                        const invite = new RoomInvite({room: roomId, to: friendId, from: hostId})
                         invite.save()
                     }
                 })

@@ -1,6 +1,6 @@
 import express, {Request, Response, NextFunction } from 'express'
 import { isLoggedIn } from '../middleware/permitions'
-import { validateEntry } from '../middleware/pollRooms';
+import { validateEntry, validateCodeEntry } from '../middleware/pollRooms';
 const Polls = express()
 var shortHash = require('short-hash');
 const Poll = require('../models/poll')
@@ -17,9 +17,18 @@ Polls.get('/', isLoggedIn, (req: Request, res: Response)=>{
     res.redirect('/poll/'+newPoll._id)
 })
 
+
 Polls.get('/:id', isLoggedIn, validateEntry, async(req: Request, res: Response)=>{
     const poll = await Poll.findOne({_id: req.params.id})
-    const user = await User.findOne({_id: res.locals.currentUser._id}).populate('friends')
-    res.render('poll', {poll, friends: user.friends})
+    let friends = [];
+    if(res.locals.currentUser._id.toString() === poll.host._id.toString()){
+        const user = await User.findOne({_id: res.locals.currentUser._id}).populate('friends')
+        friends = user.friends
+    }
+    
+    res.render('poll', {poll, friends})
 })
+
+Polls.post('/join/code', isLoggedIn, validateCodeEntry, (req: Request, res: Response)=>{})
+
 export default Polls

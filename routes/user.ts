@@ -3,6 +3,7 @@ import { isLoggedIn, isUser } from '../middleware/permitions'
 const User = require('../models/user')
 const Poll = require('../models/poll')
 const FriendRequest = require('../models/friendRequest')
+const RoomInvite = require('../models/roomInvite')
 const Users = express()
 
 Users.get('/:id', isLoggedIn, isUser, async (req: Request, res: Response)=>{
@@ -37,7 +38,8 @@ Users.post('/:id/find', isLoggedIn, isUser, async (req: Request, res: Response)=
 Users.get('/:id/notification', isLoggedIn, isUser, async (req: Request, res: Response)=>{
     try{
         const nots = await FriendRequest.find({to: req.params.id, accepted: false}).populate('from').populate('to');
-        res.render('userProfileNotification', {nots})
+        const invs = await RoomInvite.find({to: req.params.id, accepted: false}).populate('from').populate('to')
+        res.render('userProfileNotification', {nots, invs})
     }catch(e){
         console.log(e)
         res.redirect('/');

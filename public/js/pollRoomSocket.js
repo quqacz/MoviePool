@@ -26,7 +26,7 @@ socket.on('fetchMoreMovies', (data, movieName, page)=>{
     }
 })
 
-function inviteFriend(friendId, roomId){
-    console.log(friendId, roomId)
-    socket.emit('sendRoomInvite', friendId, roomId)
+function inviteFriend(friendId, roomId, hostId){
+    console.log(friendId, roomId, hostId)
+    socket.emit('sendRoomInvite', friendId, roomId, hostId)
 }

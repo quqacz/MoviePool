@@ -1,9 +1,46 @@
 import express, {Request, Response, NextFunction } from 'express'
 import { isLoggedIn } from '../middleware/permitions'
-const Poll = express()
+import { validateEntry, validateCodeEntry } from '../middleware/pollRooms';
+const Polls = express()
+var shortHash = require('short-hash');
+const Poll = require('../models/poll')
+const User = require('../models/user')
+const RoomInvite = require('../models/roomInvite')
 
-Poll.get('/', isLoggedIn, (req: Request, res: Response)=>{
-    res.render('poll')
+Polls.get('/', isLoggedIn, (req: Request, res: Response)=>{
+    let hash = Date.now().toString()
+    let entryCode = shortHash(hash)
+    const newPoll = new Poll({ entryCode })
+    if(res.locals.currentUser){
+        newPoll.host = res.locals.currentUser
+    }
+    newPoll.save()
+    res.redirect('/poll/'+newPoll._id)
 })
 
-export default Poll
+
+Polls.get('/:id', isLoggedIn, validateEntry, async(req: Request, res: Response)=>{
+    const poll = await Poll.findOne({_id: req.params.id})
+    let friends = [];
+    if(res.locals.currentUser._id.toString() === poll.host._id.toString()){
+        const user = await User.findOne({_id: res.locals.currentUser._id}).populate('friends')
+        friends = user.friends
+    }
+    
+    res.render('poll', {poll, friends})
+})
+
+Polls.post('/join/code', isLoggedIn, validateCodeEntry, (req: Request, res: Response)=>{})
+
+Polls.get('/:invId/accept/:to', async(req: Request, res: Response)=>{
+    const { invId, to } = req.params
+    const invite = await RoomInvite.findOne({_id: invId, to})
+    const room = await Poll.findOne({_id: invite.room})
+    room.voters.push(to);
+    room.save()
+    invite.accepted = true;
+    invite.save()
+    res.redirect('/poll/'+room._id)
+})
+
+export default Polls

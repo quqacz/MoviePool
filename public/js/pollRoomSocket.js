@@ -25,3 +25,8 @@ socket.on('fetchMoreMovies', (data, movieName, page)=>{
         renderError('No movies found')
     }
 })
+
+function inviteFriend(friendId, roomId, hostId){
+    console.log(friendId, roomId, hostId)
+    socket.emit('sendRoomInvite', friendId, roomId, hostId)
+}

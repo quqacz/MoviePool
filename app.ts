@@ -7,7 +7,7 @@ import { getUpcomingMovies } from "./apiRequests"
 import requestLoggerMiddleware from './middleware/requestLogger'
 
 import Auth from "./routes/auth"
-import Poll from "./routes/poll"
+import Polls from "./routes/poll"
 import Users from "./routes/user"
 import Other from "./routes/other"
 
@@ -26,7 +26,7 @@ const io = new Server(server)
 // db models
 const User = require('./models/user')
 const FriendRequest = require('./models/friendRequest')
-
+const RoomInvites = require('./models/roomInvite')
 // cash stuff to save api calls and reduce loading time 
 let MoviesCash = {
     lastFetched: `${new Date().getFullYear}${new Date().getMonth}${new Date().getDay}`,
@@ -86,7 +86,8 @@ app.use(async (req: Request, res: Response, next: NextFunction) => {
     res.locals.currentUser = req.user;
     if(res.locals.currentUser){
         let nots = await FriendRequest.find({to: res.locals.currentUser._id, accepted: false})
-        res.locals.currentUser.notifications = nots.length
+        let invs = await RoomInvites.find({to: res.locals.currentUser._id, accepted: false})
+        res.locals.currentUser.notifications = nots.length + invs.length
     }
     next();
 })
@@ -113,7 +114,7 @@ app.get('/', async(req: Request, res: Response)=>{
 })
 
 app.use('', Auth);
-app.use('/poll', Poll)
+app.use('/poll', Polls)
 app.use('/user', Users)
 app.use('', Other)
 

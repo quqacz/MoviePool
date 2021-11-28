@@ -7,7 +7,7 @@ const PollSchema = new Schema({
     host: {type: Schema.Types.ObjectId, ref: 'User'},
     voters: [{type: Schema.Types.ObjectId, ref: 'User'}],
     movies: [{type: Schema.Types.ObjectId, ref: 'Vote'}],
-    winner: {type: Schema.Types.ObjectId, ref: 'Vote'},
+    winner: {type: Schema.Types.ObjectId, ref: 'Vote', default: undefined},
     finished: {type: Boolean, default: false}
 });
 

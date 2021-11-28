@@ -5,6 +5,7 @@ const Polls = express()
 var shortHash = require('short-hash');
 const Poll = require('../models/poll')
 const User = require('../models/user')
+const RoomInvite = require('../models/roomInvite')
 
 Polls.get('/', isLoggedIn, (req: Request, res: Response)=>{
     let hash = Date.now().toString()
@@ -30,5 +31,16 @@ Polls.get('/:id', isLoggedIn, validateEntry, async(req: Request, res: Response)=
 })
 
 Polls.post('/join/code', isLoggedIn, validateCodeEntry, (req: Request, res: Response)=>{})
+
+Polls.get('/:invId/accept/:to', async(req: Request, res: Response)=>{
+    const { invId, to } = req.params
+    const invite = await RoomInvite.findOne({_id: invId, to})
+    const room = await Poll.findOne({_id: invite.room})
+    room.voters.push(to);
+    room.save()
+    invite.accepted = true;
+    invite.save()
+    res.redirect('/poll/'+room._id)
+})
 
 export default Polls

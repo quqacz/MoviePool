@@ -9,10 +9,14 @@ const Users = express()
 Users.get('/:id', isLoggedIn, isUser, async (req: Request, res: Response)=>{
     try{
         const user = await User.findOne({_id: req.params.id}).populate('friends');
-        const polls = await Poll.find({$or: [
-            {host: req.params.id},
-            {voters: {$in: [ req.params.id ]}}
-        ]})
+        const polls = await Poll.find({
+            $or: [
+                {host: req.params.id},
+                {voters: {$in: [ req.params.id ]}}
+            ]
+        }).sort({
+            finished: -1
+        })
         res.render('userProfile', {user, friends: undefined, polls})
     }catch(e){
         console.log(e)
@@ -38,7 +42,7 @@ Users.post('/:id/find', isLoggedIn, isUser, async (req: Request, res: Response)=
 Users.get('/:id/notification', isLoggedIn, isUser, async (req: Request, res: Response)=>{
     try{
         const nots = await FriendRequest.find({to: req.params.id, accepted: false}).populate('from').populate('to');
-        const invs = await RoomInvite.find({to: req.params.id, accepted: false}).populate('from').populate('to')
+        const invs = await RoomInvite.find({to: req.params.id, accepted: false, finised: false}).populate('from').populate('to')
         res.render('userProfileNotification', {nots, invs})
     }catch(e){
         console.log(e)

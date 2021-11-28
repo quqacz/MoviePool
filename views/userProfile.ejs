@@ -9,14 +9,17 @@
             <button type="submit">Join</button>
         </form>
     </h4>
+
     <%for(let i = 0; i < user.friends.length; i++){%>
         <p><%= user.friends[i].username%></p>
         <p><%= user.friends[i].nickname%></p>
     <%}%>
+
     <form action="/user/<%=user._id%>/find" method="post">
         <input type="text" placeholder="User nickname" name='friendName'>
         <button type="submit">Search</button>
     </form>
+
     <%if(friends){%>
         <%for(let i = 0; i < friends.length; i++){%>
             <hr>
@@ -27,16 +30,20 @@
             </form>
         <%}%>
     <%}%>
+
     <hr>
+
     <%for(let i = 0; i < polls.length; i++){%>
         <p><%= polls[i].data%></p>
         <%if(!polls[i].finished){%>
             <p>Entry code <%= polls[i].entryCode%></p>
+            <a href="/poll/<%=polls[i]._id%>"> JOIN TO ROOM</a>
         <%}else{%>
             <p>Winner <%= polls[i].winner.imdbId%></p>
         <%}%>
         <p>Number of movies <%= polls[i].movies.length%></p>
         <p>Number of voters <%= polls[i].voters.length%></p>
     <%}%>
+
 </div>
 <%- include ('partials/htmlFooter') %>

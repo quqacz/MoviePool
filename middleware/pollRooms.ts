@@ -17,7 +17,6 @@ async function validateEntry(req: Request, res: Response, next: NextFunction){
 }
 
 async function validateCodeEntry(req: Request, res: Response, next: NextFunction){
-    console.log('waszło kurwa mać')
     try{
         let { entryCode } = req.body
         let poll = await Poll.findOne({entryCode})

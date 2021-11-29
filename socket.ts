@@ -1,7 +1,10 @@
 import axios, { AxiosResponse } from "axios";
 import { Socket } from "socket.io"
+import { FoundMovie } from "./types/types";
 
 const RoomInvite = require('./models/roomInvite')
+const Poll = require('./models/poll')
+const Movie = require('./models/movie')
 
 exports = module.exports = function(io: Socket){
     io.on('connection', (socket)=>{
@@ -9,6 +12,11 @@ exports = module.exports = function(io: Socket){
     
         socket.on('disconnect', () => {
             console.log("disconnect")
+        })
+
+        socket.on('joinRoom', (roomId: String)=>{
+            socket.join(roomId)
+            socket.roomId = roomId
         })
 
         socket.on('fetchMovies', (movieName: string)=>{
@@ -34,6 +42,49 @@ exports = module.exports = function(io: Socket){
                     if(!invite){
                         const invite = new RoomInvite({room: roomId, to: friendId, from: hostId})
                         invite.save()
+                    }
+                })
+            }catch(e){
+                console.log(e)
+            }
+        })
+
+        socket.on('addToQueue', (movie: FoundMovie)=>{
+            console.log('weszło w request')
+            try{
+                Poll.findOne({_id: socket.roomId}, (err: any, room: any)=>{
+                    if(err){
+                        console.log(err)
+                    }else{
+                        if(room){
+                            console.log('weszło w pokój')
+                            Movie.findOne({imdbId: movie.imdbID}, (err: any, foundMovie: any)=>{
+                                if(err){
+                                    console.log(err)
+                                }else{
+                                    if(foundMovie){
+                                        console.log('jest film i go dodaje')
+                                        room.movies.push(foundMovie)
+                                        room.save()
+                                    }else{
+                                        console.log('nie ma filmu, tworzy go')
+                                        const newMovie = new Movie({
+                                            imdbId: movie.imdbID,
+                                            year: movie.Year,
+                                            poster: movie.Poster
+                                        }, (err: any, addedMovie: any)=>{
+                                            if(err){
+                                                console.log(err)
+                                            }else{
+                                                console.log('nie ma filmu, dodaje go')
+                                                room.movies.push(addedMovie)
+                                                room.save()
+                                            }
+                                        })
+                                    }
+                                }
+                            })
+                        }
                     }
                 })
             }catch(e){

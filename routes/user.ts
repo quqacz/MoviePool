@@ -1,10 +1,12 @@
 import express, {Request, Response, NextFunction } from 'express'
 import { isLoggedIn, isUser } from '../middleware/permitions'
+
+const Users = express()
+
 const User = require('../models/user')
 const Poll = require('../models/poll')
 const FriendRequest = require('../models/friendRequest')
 const RoomInvite = require('../models/roomInvite')
-const Users = express()
 
 Users.get('/:id', isLoggedIn, isUser, async (req: Request, res: Response)=>{
     try{

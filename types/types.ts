@@ -34,4 +34,12 @@ type Rating = {
     Value: string,
 }
 
-export { ShortMovieInfo, FullMovieInfo, Rating }
+type FoundMovie = {
+    Title: String,
+    Year: String,
+    imdbID: String,
+    Type: String,
+    Poster: String
+}
+
+export { ShortMovieInfo, FullMovieInfo, Rating, FoundMovie }

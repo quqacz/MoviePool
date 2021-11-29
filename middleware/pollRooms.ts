@@ -21,7 +21,6 @@ async function validateCodeEntry(req: Request, res: Response, next: NextFunction
         let { entryCode } = req.body
         let poll = await Poll.findOne({entryCode})
         if(poll){
-            console.log(poll._id)
             poll.voters.push(res.locals.currentUser)
             poll.save()
             return res.redirect('/poll/'+poll._id)

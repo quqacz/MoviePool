@@ -1,5 +1,8 @@
 const movieName = document.querySelector('#movieName');
 const moviesWrapper = document.querySelector('#moviesWrapper')
+
+socket.emit('joinRoom', roomId)
+
 function getMovies(){
     socket.emit('fetchMovies', movieName.value)
 }
@@ -17,11 +20,20 @@ function renderMovies(movies){
         let img = document.createElement('img')
         img.setAttribute('src', movies[i].Poster)
 
+        let addButton = document.createElement('button')
+        addButton.type = "button"
+        addButton.innerHTML = "Add to queue"
+        addButton.addEventListener('click', function(){
+            console.log(movies[i])
+            socket.emit('addToQueue', movies[i])
+        })
+
         let hr = document.createElement('hr')
 
         wrap.appendChild(title)
         wrap.appendChild(year)
         wrap.appendChild(img)  
+        wrap.appendChild(addButton)
         wrap.appendChild(hr) 
         moviesWrapper.appendChild(wrap)
     }

@@ -49,44 +49,58 @@ exports = module.exports = function(io: Socket){
             }
         })
 
-        socket.on('addToQueue', (movie: FoundMovie)=>{
-            console.log('weszło w request')
+        socket.on('addToQueue', async(imdbID: FoundMovie)=>{
             try{
-                Poll.findOne({_id: socket.roomId}, (err: any, room: any)=>{
-                    if(err){
-                        console.log(err)
-                    }else{
-                        if(room){
-                            console.log('weszło w pokój')
-                            Movie.findOne({imdbId: movie.imdbID}, (err: any, foundMovie: any)=>{
-                                if(err){
-                                    console.log(err)
-                                }else{
-                                    if(foundMovie){
-                                        console.log('jest film i go dodaje')
-                                        room.movies.push(foundMovie)
-                                        room.save()
-                                    }else{
-                                        console.log('nie ma filmu, tworzy go')
-                                        const newMovie = new Movie({
-                                            imdbId: movie.imdbID,
-                                            year: movie.Year,
-                                            poster: movie.Poster
-                                        }, (err: any, addedMovie: any)=>{
-                                            if(err){
-                                                console.log(err)
-                                            }else{
-                                                console.log('nie ma filmu, dodaje go')
-                                                room.movies.push(addedMovie)
-                                                room.save()
-                                            }
-                                        })
-                                    }
-                                }
-                            })
-                        }
+                let movie = await Movie.findOne({imdbID})
+                if(!movie){
+                    axios.get('http://www.omdbapi.com/?i='+imdbID+'&apikey='+process.env.MOVIE_API_KEY)
+                    .then((res: AxiosResponse)=>{
+                        delete res.data.Ratings
+                        delete res.data.BoxOffice
+                        delete res.data.Production
+                        delete res.data.Website
+                        delete res.data.Response
+                        const newMovie = new Movie(res.data)
+                        newMovie.save();
+                        Poll.findOne({_id: socket.roomId}, (err: any, poll: any)=>{
+                            if(err){
+                                console.log(err)
+                            }else{
+                                poll.movies.push(newMovie)
+                                poll.save()
+                            }   
+                        })
+                    })
+                }else{
+                    const pollRoom = await Poll.findOne({_id: socket.roomId, movies: {$nin: [movie._id]}})
+                    if(pollRoom){
+                        pollRoom.movies.push(movie)
+                        pollRoom.save()
                     }
-                })
+                }
+            }catch(e){
+                console.log(e)
+            }
+        })
+        // Ratings, DVD, BoxOffice, Production, Website, Response
+        socket.on('checkIfMovieInDb', async(imbdId: string)=>{
+            try{
+                const movie = await Movie.findOne({imbdId})
+                if(!movie){
+                    axios.get('http://www.omdbapi.com/?i='+imbdId+'&apikey='+process.env.MOVIE_API_KEY)
+                    .then((res: AxiosResponse)=>{
+                        delete res.data.Ratings
+                        delete res.data.BoxOffice
+                        delete res.data.Production
+                        delete res.data.Website
+                        delete res.data.Response
+                        const newMovie = new Movie(res.data)
+                        newMovie.save();
+                    })
+                    socket.emit('checkIfMovieInDb', imbdId, 0)
+                }else{
+                    socket.emit('checkIfMovieInDb', imbdId, 1)
+                }
             }catch(e){
                 console.log(e)
             }

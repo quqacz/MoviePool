@@ -25,7 +25,7 @@ function renderMovies(movies){
         addButton.innerHTML = "Add to queue"
         addButton.addEventListener('click', function(){
             console.log(movies[i])
-            socket.emit('addToQueue', movies[i])
+            socket.emit('addToQueue', movies[i].imdbID)
         })
 
         let hr = document.createElement('hr')

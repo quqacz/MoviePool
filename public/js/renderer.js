@@ -8,6 +8,10 @@ function getMovies(){
     socket.emit('fetchMovies', movieName.value)
 }
 
+function inviteFriend(friendId, roomId, hostId){
+    socket.emit('sendRoomInvite', friendId, roomId, hostId)
+}
+
 function renderMovies(movies){
     for(let i = 0; i < movies.length; i++){
         let wrap = document.createElement('div')
@@ -96,7 +100,7 @@ function renderPagination(total, movieName, page = 1){
     moviesWrapper.appendChild(wrap)
 }
 
-function renderRoomStats(movies, voters){
+function renderRoomStats(movies, voters, moviesToAdd){
     resetStatsRender()
     const wrapp = document.createElement('div');
 
@@ -107,6 +111,13 @@ function renderRoomStats(movies, voters){
     votersInfo.textContent = voters+ ' voter' + (voters > 1 ? 's ': ' ') + 'is in the room'
 
     wrapp.appendChild(queueInfo)
+
+    if(moviesToAdd !== undefined){
+        const additionsCount = document.createElement('h4')
+        additionsCount.textContent = 'You can add ' + moviesToAdd +' more movie'+ (moviesToAdd > 1 ? 's' : '')
+        wrapp.appendChild(additionsCount)
+    }
+
     wrapp.appendChild(votersInfo)
     statsWrapper.appendChild(wrapp)
 }

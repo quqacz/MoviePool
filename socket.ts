@@ -17,12 +17,13 @@ exports = module.exports = function(io: Socket){
         socket.on('joinRoom', (roomId: String)=>{
             socket.join(roomId)
             socket.roomId = roomId
+            socket.numberOfMoviesToAdd = 5
             Poll.findOne({_id: socket.roomId}, (err: any, poll: any)=>{
                 if(err){
                     console.log(err)
                 }else{
-                    socket.to(socket.roomId).emit('updateRoomInfo', poll.movies.length, poll.voters.length + 1)
-                    socket.emit('updateRoomInfo', poll.movies.length, poll.voters.length + 1)
+                    socket.to(socket.roomId).emit('updateRoomInfo', poll.movies.length, poll.voters.length + 1, undefined)
+                    socket.emit('updateRoomInfo', poll.movies.length, poll.voters.length + 1, socket.numberOfMoviesToAdd)
                 }   
             })
         })
@@ -59,35 +60,39 @@ exports = module.exports = function(io: Socket){
 
         socket.on('addToQueue', async(imdbID: FoundMovie)=>{
             try{
-                let movie = await Movie.findOne({imdbID})
-                if(!movie){
-                    axios.get('http://www.omdbapi.com/?i='+imdbID+'&apikey='+process.env.MOVIE_API_KEY)
-                    .then((res: AxiosResponse)=>{
-                        delete res.data.Ratings
-                        delete res.data.BoxOffice
-                        delete res.data.Production
-                        delete res.data.Website
-                        delete res.data.Response
-                        const newMovie = new Movie(res.data)
-                        newMovie.save();
-                        Poll.findOne({_id: socket.roomId}, (err: any, poll: any)=>{
-                            if(err){
-                                console.log(err)
-                            }else{
-                                poll.movies.push(newMovie)
-                                poll.save()
-                                socket.to(socket.roomId).emit('updateRoomInfo', poll.movies.length, poll.voters.length + 1)
-                                socket.emit('updateRoomInfo', poll.movies.length, poll.voters.length + 1)
-                            }   
+                if(socket.numberOfMoviesToAdd >= 1){
+                    let movie = await Movie.findOne({imdbID})
+                    if(!movie){
+                        axios.get('http://www.omdbapi.com/?i='+imdbID+'&apikey='+process.env.MOVIE_API_KEY)
+                        .then((res: AxiosResponse)=>{
+                            delete res.data.Ratings
+                            delete res.data.BoxOffice
+                            delete res.data.Production
+                            delete res.data.Website
+                            delete res.data.Response
+                            const newMovie = new Movie(res.data)
+                            newMovie.save();
+                            Poll.findOne({_id: socket.roomId}, (err: any, poll: any)=>{
+                                if(err){
+                                    console.log(err)
+                                }else{
+                                    poll.movies.push(newMovie)
+                                    poll.save()
+                                    socket.numberOfMoviesToAdd--
+                                    socket.to(socket.roomId).emit('updateRoomInfo', poll.movies.length, poll.voters.length + 1, undefined)
+                                    socket.emit('updateRoomInfo', poll.movies.length, poll.voters.length + 1, socket.numberOfMoviesToAdd)
+                                }   
+                            })
                         })
-                    })
-                }else{
-                    const pollRoom = await Poll.findOne({_id: socket.roomId, movies: {$nin: [movie._id]}})
-                    if(pollRoom){
-                        pollRoom.movies.push(movie)
-                        pollRoom.save()
-                        socket.to(socket.roomId).emit('updateRoomInfo', pollRoom.movies.length, pollRoom.voters.length + 1)
-                        socket.emit('updateRoomInfo', pollRoom.movies.length, pollRoom.voters.length + 1)
+                    }else{
+                        const pollRoom = await Poll.findOne({_id: socket.roomId, movies: {$nin: [movie._id]}})
+                        if(pollRoom){
+                            pollRoom.movies.push(movie)
+                            pollRoom.save()
+                            socket.numberOfMoviesToAdd--
+                            socket.to(socket.roomId).emit('updateRoomInfo', pollRoom.movies.length, pollRoom.voters.length + 1, undefined)
+                            socket.emit('updateRoomInfo', pollRoom.movies.length, pollRoom.voters.length + 1, socket.numberOfMoviesToAdd)
+                        }
                     }
                 }
             }catch(e){

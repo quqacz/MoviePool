@@ -26,10 +26,7 @@ socket.on('fetchMoreMovies', (data, movieName, page)=>{
     }
 })
 
-socket.on('updateRoomInfo', (numberOfMovies, numberOfVoters)=>{
-    renderRoomStats(numberOfMovies, numberOfVoters)
+socket.on('updateRoomInfo', (numberOfMovies, numberOfVoters, numberOfMoviesToAdd)=>{
+    renderRoomStats(numberOfMovies, numberOfVoters, numberOfMoviesToAdd)
 })
 
-function inviteFriend(friendId, roomId, hostId){
-    socket.emit('sendRoomInvite', friendId, roomId, hostId)
-}

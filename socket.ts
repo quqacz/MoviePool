@@ -78,6 +78,7 @@ exports = module.exports = function(io: Socket){
                         pollRoom.save()
                     }
                 }
+                
             }catch(e){
                 console.log(e)
             }

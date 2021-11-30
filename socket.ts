@@ -17,6 +17,14 @@ exports = module.exports = function(io: Socket){
         socket.on('joinRoom', (roomId: String)=>{
             socket.join(roomId)
             socket.roomId = roomId
+            Poll.findOne({_id: socket.roomId}, (err: any, poll: any)=>{
+                if(err){
+                    console.log(err)
+                }else{
+                    socket.to(socket.roomId).emit('updateRoomInfo', poll.movies.length, poll.voters.length + 1)
+                    socket.emit('updateRoomInfo', poll.movies.length, poll.voters.length + 1)
+                }   
+            })
         })
 
         socket.on('fetchMovies', (movieName: string)=>{
@@ -68,6 +76,8 @@ exports = module.exports = function(io: Socket){
                             }else{
                                 poll.movies.push(newMovie)
                                 poll.save()
+                                socket.to(socket.roomId).emit('updateRoomInfo', poll.movies.length, poll.voters.length + 1)
+                                socket.emit('updateRoomInfo', poll.movies.length, poll.voters.length + 1)
                             }   
                         })
                     })
@@ -76,9 +86,10 @@ exports = module.exports = function(io: Socket){
                     if(pollRoom){
                         pollRoom.movies.push(movie)
                         pollRoom.save()
+                        socket.to(socket.roomId).emit('updateRoomInfo', pollRoom.movies.length, pollRoom.voters.length + 1)
+                        socket.emit('updateRoomInfo', pollRoom.movies.length, pollRoom.voters.length + 1)
                     }
                 }
-                
             }catch(e){
                 console.log(e)
             }

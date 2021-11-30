@@ -1,5 +1,6 @@
 const movieName = document.querySelector('#movieName');
 const moviesWrapper = document.querySelector('#moviesWrapper')
+const statsWrapper = document.querySelector('#statsWrapper')
 
 socket.emit('joinRoom', roomId)
 
@@ -51,6 +52,10 @@ function resetMoviesRender(){
     moviesWrapper.innerHTML = ''
 }
 
+function resetStatsRender(){
+    statsWrapper.innerHTML = ''
+}
+
 function showNumberOfMovies(number, movieName){
     let wrap = document.createElement('div')
     let h = document.createElement('h3')
@@ -89,4 +94,19 @@ function renderPagination(total, movieName, page = 1){
 
     wrap.appendChild(innerWrap)
     moviesWrapper.appendChild(wrap)
+}
+
+function renderRoomStats(movies, voters){
+    resetStatsRender()
+    const wrapp = document.createElement('div');
+
+    const queueInfo = document.createElement('h4')
+    queueInfo.textContent = 'There '+ (movies > 1 ? 'are ': 'is ')+''+ movies + ' movie' + (movies > 1 ? 's ': ' ') + 'in the queue'
+
+    const votersInfo = document.createElement('h5')
+    votersInfo.textContent = voters+ ' voter' + (voters > 1 ? 's ': ' ') + 'is in the room'
+
+    wrapp.appendChild(queueInfo)
+    wrapp.appendChild(votersInfo)
+    statsWrapper.appendChild(wrapp)
 }

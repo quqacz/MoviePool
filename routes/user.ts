@@ -1,18 +1,20 @@
 import express, {Request, Response, NextFunction } from 'express'
 import { isLoggedIn, isUser } from '../middleware/permitions'
+
+const Users = express()
+
 const User = require('../models/user')
 const Poll = require('../models/poll')
 const FriendRequest = require('../models/friendRequest')
 const RoomInvite = require('../models/roomInvite')
-const Users = express()
 
 Users.get('/:id', isLoggedIn, isUser, async (req: Request, res: Response)=>{
     try{
         const user = await User.findOne({_id: req.params.id}).populate('friends');
         const polls = await Poll.find({
             $or: [
-                {host: req.params.id},
-                {voters: {$in: [ req.params.id ]}}
+                {'host.user': req.params.id},
+                {'voters.voter': {$in: [ req.params.id ]}}
             ]
         }).sort({
             finished: -1

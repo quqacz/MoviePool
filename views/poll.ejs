@@ -10,11 +10,14 @@
             <button type="button" onclick="inviteFriend('<%=friends[i]._id%>', '<%=poll._id%>', '<%=currentUser._id%>')">Invite</button>
         <%}%>
     </div>
+    <div id="statsWrapper">
+
+    </div>
     <div id="moviesWrapper">
 
     </div>
 </div>  
 <%- include ('partials/socketConnection') %>
-<script src="/js/moviesFetch.js"></script>
+<script src="/js/renderer.js"></script>
 <script src="/js/pollRoomSocket.js"></script>
 <%- include ('partials/htmlFooter') %>

@@ -1,7 +1,15 @@
 const movieName = document.querySelector('#movieName');
 const moviesWrapper = document.querySelector('#moviesWrapper')
+const statsWrapper = document.querySelector('#statsWrapper')
+
+socket.emit('joinRoom', roomId, userId)
+
 function getMovies(){
     socket.emit('fetchMovies', movieName.value)
+}
+
+function inviteFriend(friendId, roomId, hostId){
+    socket.emit('sendRoomInvite', friendId, roomId, hostId)
 }
 
 function renderMovies(movies){
@@ -17,11 +25,20 @@ function renderMovies(movies){
         let img = document.createElement('img')
         img.setAttribute('src', movies[i].Poster)
 
+        let addButton = document.createElement('button')
+        addButton.type = "button"
+        addButton.innerHTML = "Add to queue"
+        addButton.addEventListener('click', function(){
+            console.log(movies[i])
+            socket.emit('addToQueue', movies[i].imdbID)
+        })
+
         let hr = document.createElement('hr')
 
         wrap.appendChild(title)
         wrap.appendChild(year)
         wrap.appendChild(img)  
+        wrap.appendChild(addButton)
         wrap.appendChild(hr) 
         moviesWrapper.appendChild(wrap)
     }
@@ -37,6 +54,10 @@ function renderError(arg){
 
 function resetMoviesRender(){
     moviesWrapper.innerHTML = ''
+}
+
+function resetStatsRender(){
+    statsWrapper.innerHTML = ''
 }
 
 function showNumberOfMovies(number, movieName){
@@ -77,4 +98,26 @@ function renderPagination(total, movieName, page = 1){
 
     wrap.appendChild(innerWrap)
     moviesWrapper.appendChild(wrap)
+}
+
+function renderRoomStats(movies, voters, moviesToAdd){
+    resetStatsRender()
+    const wrapp = document.createElement('div');
+
+    const queueInfo = document.createElement('h4')
+    queueInfo.textContent = 'There '+ (movies > 1 ? 'are ': 'is ')+''+ movies + ' movie' + (movies > 1 ? 's ': ' ') + 'in the queue'
+
+    const votersInfo = document.createElement('h5')
+    votersInfo.textContent = voters+ ' voter' + (voters > 1 ? 's ': ' ') + 'is in the room'
+
+    wrapp.appendChild(queueInfo)
+
+    if(moviesToAdd !== undefined){
+        const additionsCount = document.createElement('h4')
+        additionsCount.textContent = 'You can add ' + moviesToAdd +' more movie'+ (moviesToAdd > 1 ? 's' : '')
+        wrapp.appendChild(additionsCount)
+    }
+
+    wrapp.appendChild(votersInfo)
+    statsWrapper.appendChild(wrapp)
 }

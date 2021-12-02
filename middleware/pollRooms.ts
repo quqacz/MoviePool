@@ -5,8 +5,8 @@ async function validateEntry(req: Request, res: Response, next: NextFunction){
     let poll = await Poll.findOne({
         _id: req.params.id, 
         $or: [
-            {voters: {$in: [res.locals.currentUser._id]}},
-            {host: res.locals.currentUser._id}
+            {'voters.voter': {$in: [res.locals.currentUser._id]}},
+            {'host.user': res.locals.currentUser._id}
         ]    
     })
     if(poll){
@@ -21,8 +21,8 @@ async function validateCodeEntry(req: Request, res: Response, next: NextFunction
         let { entryCode } = req.body
         let poll = await Poll.findOne({entryCode})
         if(poll){
-            console.log(poll._id)
-            poll.voters.push(res.locals.currentUser)
+            // TODO prevent multiple entries by the same person
+            poll.voters.push({voter: res.locals.currentUser})
             poll.save()
             return res.redirect('/poll/'+poll._id)
         }else{

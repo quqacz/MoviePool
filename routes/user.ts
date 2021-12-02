@@ -13,8 +13,8 @@ Users.get('/:id', isLoggedIn, isUser, async (req: Request, res: Response)=>{
         const user = await User.findOne({_id: req.params.id}).populate('friends');
         const polls = await Poll.find({
             $or: [
-                {host: req.params.id},
-                {voters: {$in: [ req.params.id ]}}
+                {'host.user': req.params.id},
+                {'voters.voter': {$in: [ req.params.id ]}}
             ]
         }).sort({
             finished: -1

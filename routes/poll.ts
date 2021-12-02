@@ -15,7 +15,7 @@ Polls.get('/', isLoggedIn, (req: Request, res: Response)=>{
         let entryCode = shortHash(hash)
         const newPoll = new Poll({ entryCode })
         if(res.locals.currentUser){
-            newPoll.host = res.locals.currentUser
+            newPoll.host.user = res.locals.currentUser
         }
         newPoll.save()
         res.redirect('/poll/'+newPoll._id)
@@ -29,7 +29,7 @@ Polls.get('/:id', isLoggedIn, validateEntry, async(req: Request, res: Response)=
     try{
         const poll = await Poll.findOne({_id: req.params.id})
         let friends = [];
-        if(res.locals.currentUser._id.toString() === poll.host._id.toString()){
+        if(res.locals.currentUser._id.toString() === poll.host.user._id.toString()){
             const user = await User.findOne({_id: res.locals.currentUser._id}).populate('friends')
             friends = user.friends
         }
@@ -42,12 +42,12 @@ Polls.get('/:id', isLoggedIn, validateEntry, async(req: Request, res: Response)=
 
 Polls.post('/join/code', isLoggedIn, validateCodeEntry, (req: Request, res: Response)=>{})
 
-Polls.get('/:invId/accept/:to', async(req: Request, res: Response)=>{
+Polls.get('/:invId/accept/:to', isLoggedIn, async(req: Request, res: Response)=>{
     try{
         const { invId, to } = req.params
         const invite = await RoomInvite.findOne({_id: invId, to})
-        const room = await Poll.findOne({_id: invite.room})
-        room.voters.push(to);
+        const room = await Poll.findOne({_id: invite.room, 'voters.voter': {$nin: [to]}})
+        room.voters.push({to});
         room.save()
         invite.accepted = true;
         invite.save()

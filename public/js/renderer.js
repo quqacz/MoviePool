@@ -2,7 +2,7 @@ const movieName = document.querySelector('#movieName');
 const moviesWrapper = document.querySelector('#moviesWrapper')
 const statsWrapper = document.querySelector('#statsWrapper')
 
-socket.emit('joinRoom', roomId)
+socket.emit('joinRoom', roomId, userId)
 
 function getMovies(){
     socket.emit('fetchMovies', movieName.value)

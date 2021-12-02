@@ -12,6 +12,20 @@ exports = module.exports = function(io: Socket){
         // TODO reconnecting to the same room with the same socket.id
         socket.on('disconnect', () => {
             console.log("disconnect")
+            Poll.findOne({_id: socket.roomId}, (err: any, poll: any)=>{
+                if(err){
+                    console.log(err)
+                }else{
+                    if(poll.host.user.toString() == socket.userId.toString()){
+                        poll.host.maxNumberOfVotes = socket.numberOfMoviesToAdd
+                    }else{
+                        let node = poll.voters.find((element: any)=> {element.voter.toString() === socket.userId.toString()})
+                        if(node)
+                            node.numberOfVotes = socket.numberOfMoviesToAdd
+                    }
+                    poll.save()
+                }   
+            })
         })
 
         socket.on('joinRoom', (roomId: String, userId: String)=>{
@@ -23,7 +37,6 @@ exports = module.exports = function(io: Socket){
                 if(err){
                     console.log(err)
                 }else{
-                    console.log(poll)
                     if(poll.host.user.toString() == socket.userId.toString()){
                         socket.numberOfMoviesToAdd = poll.host.maxNumberOfVotes - poll.host.numberOfVotes
                     }else{

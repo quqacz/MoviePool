@@ -46,9 +46,11 @@ Polls.get('/:invId/accept/:to', isLoggedIn, async(req: Request, res: Response)=>
     try{
         const { invId, to } = req.params
         const invite = await RoomInvite.findOne({_id: invId, to})
-        const room = await Poll.findOne({_id: invite.room, 'voters.voter': {$nin: [to]}})
-        room.voters.push({to});
-        room.save()
+        const room = await Poll.findOne({_id: invite.room})
+        if(room && room.voters.includes({voter: to.toString()})){
+            room.voters.push({voter: to});
+            room.save()
+        }
         invite.accepted = true;
         invite.save()
         res.redirect('/poll/'+room._id)

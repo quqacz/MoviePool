@@ -9,21 +9,22 @@ const Movie = require('./models/movie')
 exports = module.exports = function(io: Socket){
     io.on('connection', (socket)=>{
         console.log("user connected");
-        // TODO reconnecting to the same room with the same socket.id
         socket.on('disconnect', () => {
             console.log("disconnect")
             Poll.findOne({_id: socket.roomId}, (err: any, poll: any)=>{
                 if(err){
                     console.log(err)
                 }else{
-                    if(poll.host.user.toString() == socket.userId.toString()){
-                        poll.host.maxNumberOfVotes = socket.numberOfMoviesToAdd
-                    }else{
-                        let node = poll.voters.find((element: any)=> {element.voter.toString() === socket.userId.toString()})
-                        if(node)
-                            node.numberOfVotes = socket.numberOfMoviesToAdd
+                    if(poll){
+                        if(poll.host.user.toString() == socket.userId.toString()){
+                            poll.host.maxNumberOfVotes = socket.numberOfMoviesToAdd
+                        }else{
+                            let node = poll.voters.find((element: any)=> {element.voter.toString() === socket.userId.toString()})
+                            if(node)
+                                node.numberOfVotes = socket.numberOfMoviesToAdd
+                        }
+                        poll.save()
                     }
-                    poll.save()
                 }   
             })
         })
@@ -37,15 +38,20 @@ exports = module.exports = function(io: Socket){
                 if(err){
                     console.log(err)
                 }else{
-                    if(poll.host.user.toString() == socket.userId.toString()){
-                        socket.numberOfMoviesToAdd = poll.host.maxNumberOfVotes - poll.host.numberOfVotes
-                    }else{
-                        let node = poll.voters.find((element: any)=> {element.voter.toString() === socket.userId.toString()})
-                        if(node)
-                            socket.numberOfMoviesToAdd = node.maxNumberOfVotes - node.numberOfVotes
+                    if(poll){
+                        if(poll.host.user.toString() == socket.userId.toString()){
+                            socket.numberOfMoviesToAdd = poll.host.maxNumberOfVotes - poll.host.numberOfVotes
+                        }else{
+                            const voters = poll.voters
+                            for(let i = 0; i < voters.length; i++){
+                                if(voters[i].voter._id.toString() === socket.userId.toString()){
+                                    console.log('jest trafienie')
+                                    socket.numberOfMoviesToAdd = voters[i].maxNumberOfVotes - voters[i].numberOfVotes
+                                }
+                            }
+                        }
+                        socket.emit('updateRoomInfo', poll.movies.length, poll.voters.length + 1, socket.numberOfMoviesToAdd)
                     }
-                    socket.to(socket.roomId).emit('updateRoomInfo', poll.movies.length, poll.voters.length + 1, undefined)
-                    socket.emit('updateRoomInfo', poll.movies.length, poll.voters.length + 1, socket.numberOfMoviesToAdd)
                 }   
             })
         })
@@ -101,7 +107,7 @@ exports = module.exports = function(io: Socket){
                                     poll.movies.push(newMovie)
                                     poll.save()
                                     socket.numberOfMoviesToAdd--
-                                    socket.to(socket.roomId).emit('updateRoomInfo', poll.movies.length, poll.voters.length + 1, undefined)
+                                    socket.to(socket.roomId).emit('updateRoomInfo', poll.movies.length, poll.voters.length + 1)
                                     socket.emit('updateRoomInfo', poll.movies.length, poll.voters.length + 1, socket.numberOfMoviesToAdd)
                                 }   
                             })
@@ -112,7 +118,7 @@ exports = module.exports = function(io: Socket){
                             pollRoom.movies.push(movie)
                             pollRoom.save()
                             socket.numberOfMoviesToAdd--
-                            socket.to(socket.roomId).emit('updateRoomInfo', pollRoom.movies.length, pollRoom.voters.length + 1, undefined)
+                            socket.to(socket.roomId).emit('updateRoomInfo', pollRoom.movies.length, pollRoom.voters.length + 1)
                             socket.emit('updateRoomInfo', pollRoom.movies.length, pollRoom.voters.length + 1, socket.numberOfMoviesToAdd)
                         }
                     }

@@ -26,7 +26,7 @@ socket.on('fetchMoreMovies', (data, movieName, page)=>{
     }
 })
 
-socket.on('updateRoomInfo', (numberOfMovies, numberOfVoters, numberOfMoviesToAdd)=>{
+socket.on('updateRoomInfo', (numberOfMovies, numberOfVoters, numberOfMoviesToAdd = undefined)=>{
     renderRoomStats(numberOfMovies, numberOfVoters, numberOfMoviesToAdd)
 })
 

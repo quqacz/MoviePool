@@ -2,6 +2,8 @@ const movieName = document.querySelector('#movieName');
 const moviesWrapper = document.querySelector('#moviesWrapper')
 const statsWrapper = document.querySelector('#statsWrapper')
 
+let numberOfMoviesToAdd = undefined;
+
 socket.emit('joinRoom', roomId, userId)
 
 function getMovies(){
@@ -29,7 +31,6 @@ function renderMovies(movies){
         addButton.type = "button"
         addButton.innerHTML = "Add to queue"
         addButton.addEventListener('click', function(){
-            console.log(movies[i])
             socket.emit('addToQueue', movies[i].imdbID)
         })
 
@@ -101,6 +102,16 @@ function renderPagination(total, movieName, page = 1){
 }
 
 function renderRoomStats(movies, voters, moviesToAdd){
+    if(numberOfMoviesToAdd === undefined){
+        numberOfMoviesToAdd = moviesToAdd
+    }
+    if(moviesToAdd){
+        numberOfMoviesToAdd = moviesToAdd
+    }
+    if(moviesToAdd === undefined){
+        moviesToAdd = numberOfMoviesToAdd
+    }
+    
     resetStatsRender()
     const wrapp = document.createElement('div');
 

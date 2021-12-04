@@ -5,6 +5,7 @@ import { FoundMovie } from "./types/types";
 const RoomInvite = require('./models/roomInvite')
 const Poll = require('./models/poll')
 const Movie = require('./models/movie')
+const User = require('./models/user')
 
 exports = module.exports = function(io: Socket){
     io.on('connection', (socket)=>{
@@ -45,7 +46,6 @@ exports = module.exports = function(io: Socket){
                             const voters = poll.voters
                             for(let i = 0; i < voters.length; i++){
                                 if(voters[i].voter._id.toString() === socket.userId.toString()){
-                                    console.log('jest trafienie')
                                     socket.numberOfMoviesToAdd = voters[i].maxNumberOfVotes - voters[i].numberOfVotes
                                 }
                             }
@@ -70,7 +70,7 @@ exports = module.exports = function(io: Socket){
                 })
         })
 
-        socket.on('sendRoomInvite', (friendId: string, roomId: string, hostId: string)=>{
+        socket.on('sendRoomInvite', async(friendId: string, roomId: string, hostId: string)=>{
             try{
                 RoomInvite.findOne({room: roomId, to: friendId}, (err:any, invite:any)=>{
                     if(err){
@@ -80,6 +80,38 @@ exports = module.exports = function(io: Socket){
                         const invite = new RoomInvite({room: roomId, to: friendId, from: hostId})
                         invite.save()
                     }
+
+                    Poll.findOne({_id: roomId}, (err: any, poll: any)=>{
+                        if(err){
+                            console.log(err)
+                        }else{
+                            User.findOne({_id: socket.userId})
+                            .populate('friends')
+                            .exec((err: any, user: any)=>{
+                                if(err){
+                                    console.log(err)
+                                }else{
+                                    console.log(user.friends)
+                                    const friends = []
+                                    const friendsInTheRoom = []
+                                    const voters = poll.voters
+                                    const friendlist = user.friends
+                        
+                                    for(let i = 0; i < voters.length; i++){
+                                        friendsInTheRoom.push(voters[i].voter.toString())
+                                    }
+                        
+                                    for(let i = 0; i < friendlist.length; i++){
+                                        if(!friendsInTheRoom.includes(friendlist[i]._id.toString())){
+                                            friends.push(friendlist[i])
+                                        }
+                                    }
+
+                                    socket.emit('updateFriendList', friends)
+                                }
+                            })
+                        }
+                    })  
                 })
             }catch(e){
                 console.log(e)

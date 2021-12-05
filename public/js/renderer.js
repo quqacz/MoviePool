@@ -1,6 +1,7 @@
 const movieName = document.querySelector('#movieName');
 const moviesWrapper = document.querySelector('#moviesWrapper')
 const statsWrapper = document.querySelector('#statsWrapper')
+const inviteList = document.querySelector('#inviteList')
 
 let numberOfMoviesToAdd = undefined;
 
@@ -59,6 +60,10 @@ function resetMoviesRender(){
 
 function resetStatsRender(){
     statsWrapper.innerHTML = ''
+}
+
+function resetInviteList(){
+    inviteList.innerHTML = ''
 }
 
 function showNumberOfMovies(number, movieName){
@@ -131,4 +136,41 @@ function renderRoomStats(movies, voters, moviesToAdd){
 
     wrapp.appendChild(votersInfo)
     statsWrapper.appendChild(wrapp)
+}
+
+function renderInvites(friendsToInvite, invitedFriends){
+    resetInviteList()
+    for(let i = 0; i < friendsToInvite.length; i++){
+        const wrap = document.createElement('div')
+        
+        const name = document.createElement('p')
+        name.textContent = friendsToInvite[i].nickname
+
+        const invButton = document.createElement('button')
+        invButton.type = 'button'
+        invButton.innerHTML = 'Invite'
+        invButton.addEventListener('click', function(){
+            socket.emit('sendRoomInvite', friendsToInvite[i]._id, roomId, userId)
+        })
+
+        wrap.append(name)
+        wrap.append(invButton)
+        inviteList.append(wrap)
+    }
+
+    for(let i = 0; i < invitedFriends.length; i++){
+        const wrap = document.createElement('div')
+        
+        const name = document.createElement('p')
+        name.textContent = invitedFriends[i].to.nickname
+
+        const invButton = document.createElement('button')
+        invButton.type = 'button'
+        invButton.innerHTML = invitedFriends[i].accepted ? 'Accepted' : 'Pending'
+        invButton.disabled = true
+        
+        wrap.append(name)
+        wrap.append(invButton)
+        inviteList.append(wrap)
+    }
 }

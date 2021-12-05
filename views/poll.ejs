@@ -4,10 +4,12 @@
     <h3><%= poll.entryCode %></h3>
     <input type="text" placeholder="Searched movie" name="movieName" id="movieName"> 
     <button type="button" onclick="getMovies()">Search</button> 
-    <div class="container">
+    <div class="container" id="inviteList">
         <%for(let i = 0; i < friends.length; i++){%>
-            <p> <%=friends[i].nickname%> </p>
-            <button type="button" onclick="inviteFriend('<%=friends[i]._id%>', '<%=poll._id%>', '<%=currentUser._id%>')">Invite</button>
+            <div>
+                <p> <%=friends[i].nickname%> </p>
+                <button type="button" onclick="inviteFriend('<%=friends[i]._id%>', '<%=poll._id%>', '<%=currentUser._id%>')">Invite</button>
+            </div>
         <%}%>
     </div>
     <div id="statsWrapper">

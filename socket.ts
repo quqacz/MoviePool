@@ -72,46 +72,49 @@ exports = module.exports = function(io: Socket){
 
         socket.on('sendRoomInvite', async(friendId: string, roomId: string, hostId: string)=>{
             try{
-                RoomInvite.findOne({room: roomId, to: friendId}, (err:any, invite:any)=>{
+                RoomInvite.findOne({room: roomId, to: friendId}, async (err:any, invite:any)=>{
                     if(err){
                         console.log(err)
-                    }
-                    if(!invite){
-                        const invite = new RoomInvite({room: roomId, to: friendId, from: hostId})
-                        invite.save()
-                    }
-
-                    Poll.findOne({_id: roomId}, (err: any, poll: any)=>{
-                        if(err){
-                            console.log(err)
-                        }else{
-                            User.findOne({_id: socket.userId})
-                            .populate('friends')
-                            .exec((err: any, user: any)=>{
+                    }else{
+                        if(!invite){
+                            const invite = new RoomInvite({room: roomId, to: friendId, from: hostId})
+                            await invite.save()
+                            RoomInvite.find( {room: roomId, from: socket.userId})
+                            .sort({'accepted': -1})
+                            .populate('to')
+                            .exec((err: any, invites: any)=>{
                                 if(err){
                                     console.log(err)
                                 }else{
-                                    console.log(user.friends)
-                                    const friends = []
-                                    const friendsInTheRoom = []
-                                    const voters = poll.voters
-                                    const friendlist = user.friends
-                        
-                                    for(let i = 0; i < voters.length; i++){
-                                        friendsInTheRoom.push(voters[i].voter.toString())
-                                    }
-                        
-                                    for(let i = 0; i < friendlist.length; i++){
-                                        if(!friendsInTheRoom.includes(friendlist[i]._id.toString())){
-                                            friends.push(friendlist[i])
-                                        }
-                                    }
+                                    User.findOne({_id: socket.userId})
+                                    .populate('friends')
+                                    .exec((err: any, user: any)=>{
+                                        if(err){
+                                            console.log(err)
+                                        }else{
+                                            if(user){
+                                                const friendsToInvite = []
+                                                const invitedFriends = []
+                                                const friends = user.friends
 
-                                    socket.emit('updateFriendList', friends)
+                                                for(let i = 0; i < invites.length; i++){
+                                                    invitedFriends.push(invites[i].to._id.toString())
+                                                }
+
+                                                for(let i = 0; i < friends.length; i++){
+                                                    if(!invitedFriends.includes(friends[i]._id.toString())){
+                                                        friendsToInvite.push(friends[i])
+                                                    }
+                                                }
+                                                socket.emit('updateFriendList', invites, friendsToInvite)
+                                            }
+                                        }
+                                    })
+                                     
                                 }
                             })
                         }
-                    })  
+                    }
                 })
             }catch(e){
                 console.log(e)

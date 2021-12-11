@@ -5,25 +5,27 @@ import { FoundMovie } from "./types/types";
 const RoomInvite = require('./models/roomInvite')
 const Poll = require('./models/poll')
 const Movie = require('./models/movie')
+const User = require('./models/user')
 
 exports = module.exports = function(io: Socket){
     io.on('connection', (socket)=>{
         console.log("user connected");
-        // TODO reconnecting to the same room with the same socket.id
         socket.on('disconnect', () => {
             console.log("disconnect")
             Poll.findOne({_id: socket.roomId}, (err: any, poll: any)=>{
                 if(err){
                     console.log(err)
                 }else{
-                    if(poll.host.user.toString() == socket.userId.toString()){
-                        poll.host.maxNumberOfVotes = socket.numberOfMoviesToAdd
-                    }else{
-                        let node = poll.voters.find((element: any)=> {element.voter.toString() === socket.userId.toString()})
-                        if(node)
-                            node.numberOfVotes = socket.numberOfMoviesToAdd
+                    if(poll){
+                        if(poll.host.user.toString() == socket.userId.toString()){
+                            poll.host.maxNumberOfVotes = socket.numberOfMoviesToAdd
+                        }else{
+                            let node = poll.voters.find((element: any)=> {element.voter.toString() === socket.userId.toString()})
+                            if(node)
+                                node.numberOfVotes = socket.numberOfMoviesToAdd
+                        }
+                        poll.save()
                     }
-                    poll.save()
                 }   
             })
         })
@@ -37,15 +39,19 @@ exports = module.exports = function(io: Socket){
                 if(err){
                     console.log(err)
                 }else{
-                    if(poll.host.user.toString() == socket.userId.toString()){
-                        socket.numberOfMoviesToAdd = poll.host.maxNumberOfVotes - poll.host.numberOfVotes
-                    }else{
-                        let node = poll.voters.find((element: any)=> {element.voter.toString() === socket.userId.toString()})
-                        if(node)
-                            socket.numberOfMoviesToAdd = node.maxNumberOfVotes - node.numberOfVotes
+                    if(poll){
+                        if(poll.host.user.toString() == socket.userId.toString()){
+                            socket.numberOfMoviesToAdd = poll.host.maxNumberOfVotes - poll.host.numberOfVotes
+                        }else{
+                            const voters = poll.voters
+                            for(let i = 0; i < voters.length; i++){
+                                if(voters[i].voter._id.toString() === socket.userId.toString()){
+                                    socket.numberOfMoviesToAdd = voters[i].maxNumberOfVotes - voters[i].numberOfVotes
+                                }
+                            }
+                        }
+                        socket.emit('updateRoomInfo', poll.movies.length, poll.voters.length + 1, socket.numberOfMoviesToAdd)
                     }
-                    socket.to(socket.roomId).emit('updateRoomInfo', poll.movies.length, poll.voters.length + 1, undefined)
-                    socket.emit('updateRoomInfo', poll.movies.length, poll.voters.length + 1, socket.numberOfMoviesToAdd)
                 }   
             })
         })
@@ -64,15 +70,50 @@ exports = module.exports = function(io: Socket){
                 })
         })
 
-        socket.on('sendRoomInvite', (friendId: string, roomId: string, hostId: string)=>{
+        socket.on('sendRoomInvite', async(friendId: string, roomId: string, hostId: string)=>{
             try{
-                RoomInvite.findOne({room: roomId, to: friendId}, (err:any, invite:any)=>{
+                RoomInvite.findOne({room: roomId, to: friendId}, async (err:any, invite:any)=>{
                     if(err){
                         console.log(err)
-                    }
-                    if(!invite){
-                        const invite = new RoomInvite({room: roomId, to: friendId, from: hostId})
-                        invite.save()
+                    }else{
+                        if(!invite){
+                            const invite = new RoomInvite({room: roomId, to: friendId, from: hostId})
+                            await invite.save()
+                            RoomInvite.find( {room: roomId, from: socket.userId})
+                            .sort({'accepted': -1})
+                            .populate('to')
+                            .exec((err: any, invites: any)=>{
+                                if(err){
+                                    console.log(err)
+                                }else{
+                                    User.findOne({_id: socket.userId})
+                                    .populate('friends')
+                                    .exec((err: any, user: any)=>{
+                                        if(err){
+                                            console.log(err)
+                                        }else{
+                                            if(user){
+                                                const friendsToInvite = []
+                                                const invitedFriends = []
+                                                const friends = user.friends
+
+                                                for(let i = 0; i < invites.length; i++){
+                                                    invitedFriends.push(invites[i].to._id.toString())
+                                                }
+
+                                                for(let i = 0; i < friends.length; i++){
+                                                    if(!invitedFriends.includes(friends[i]._id.toString())){
+                                                        friendsToInvite.push(friends[i])
+                                                    }
+                                                }
+                                                socket.emit('updateFriendList', invites, friendsToInvite)
+                                            }
+                                        }
+                                    })
+                                     
+                                }
+                            })
+                        }
                     }
                 })
             }catch(e){
@@ -101,7 +142,7 @@ exports = module.exports = function(io: Socket){
                                     poll.movies.push(newMovie)
                                     poll.save()
                                     socket.numberOfMoviesToAdd--
-                                    socket.to(socket.roomId).emit('updateRoomInfo', poll.movies.length, poll.voters.length + 1, undefined)
+                                    socket.to(socket.roomId).emit('updateRoomInfo', poll.movies.length, poll.voters.length + 1)
                                     socket.emit('updateRoomInfo', poll.movies.length, poll.voters.length + 1, socket.numberOfMoviesToAdd)
                                 }   
                             })
@@ -112,7 +153,7 @@ exports = module.exports = function(io: Socket){
                             pollRoom.movies.push(movie)
                             pollRoom.save()
                             socket.numberOfMoviesToAdd--
-                            socket.to(socket.roomId).emit('updateRoomInfo', pollRoom.movies.length, pollRoom.voters.length + 1, undefined)
+                            socket.to(socket.roomId).emit('updateRoomInfo', pollRoom.movies.length, pollRoom.voters.length + 1)
                             socket.emit('updateRoomInfo', pollRoom.movies.length, pollRoom.voters.length + 1, socket.numberOfMoviesToAdd)
                         }
                     }

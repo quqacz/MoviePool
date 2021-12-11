@@ -4,14 +4,31 @@
     <h3><%= poll.entryCode %></h3>
     <input type="text" placeholder="Searched movie" name="movieName" id="movieName"> 
     <button type="button" onclick="getMovies()">Search</button> 
-    <div class="container" id="inviteList">
-        <%for(let i = 0; i < friends.length; i++){%>
-            <div>
-                <p> <%=friends[i].nickname%> </p>
-                <button type="button" onclick="inviteFriend('<%=friends[i]._id%>', '<%=poll._id%>', '<%=currentUser._id%>')">Invite</button>
-            </div>
-        <%}%>
-    </div>
+    <%if(currentUser._id.toString() === poll.host.user._id.toString()){%>
+        <div class="container" id="inviteList">
+            <%for(let i = 0; i < friendsToInvite.length; i++){%>
+                <div>
+                    <p><%= friendsToInvite[i].nickname%></p>
+                    <button type="button" onclick="inviteFriend('<%=friendsToInvite[i]._id%>', '<%= poll._id%>', '<%= poll.host.user._id%>')">
+                        Invite
+                    </button>
+                </div>
+            <%}%>
+
+            <%for(let i = 0; i < invitedFriends.length; i++){%>
+                <div>
+                    <p><%= invitedFriends[i].to.nickname%></p>
+                    <button type="button" disabled>
+                        <%if(invitedFriends[i].accepted){%>
+                            <%='Accepted'%>
+                        <%}else{%>
+                            <%= 'Pending'%>
+                        <%}%>
+                    </button>
+                </div>
+            <%}%>
+        </div>
+    <%}%>
     <div id="statsWrapper">
 
     </div>

@@ -28,28 +28,32 @@ Polls.get('/', isLoggedIn, (req: Request, res: Response)=>{
 Polls.get('/:id', isLoggedIn, validateEntry, async(req: Request, res: Response)=>{
     try{
         const poll = await Poll.findOne({_id: req.params.id})
-        let friends = [];
         if(res.locals.currentUser._id.toString() === poll.host.user._id.toString()){
             const user = await User.findOne({
                 _id: res.locals.currentUser._id
             }).populate('friends')
-            
-            const friendsInTheRoom = []
-            const voters = poll.voters
-            const friendlist = user.friends
+            const invites = await RoomInvite.find({ room: req.params.id })
+                .sort({ 'accepted': -1 })
+                .populate('to')
 
-            for(let i = 0; i < voters.length; i++){
-                friendsInTheRoom.push(voters[i].voter.toString())
+            const friendsToInvite = []
+            const invitedFriends = []
+            const friends = user.friends
+
+            for(let i = 0; i < invites.length; i++){
+                invitedFriends.push(invites[i].to._id.toString())
             }
 
-            for(let i = 0; i < friendlist.length; i++){
-                if(!friendsInTheRoom.includes(friendlist[i]._id.toString())){
-                    friends.push(friendlist[i])
+            for(let i = 0; i < friends.length; i++){
+                if(!invitedFriends.includes(friends[i]._id.toString())){
+                    friendsToInvite.push(friends[i])
                 }
             }
-            // friends = user.friends
+            res.render('poll', {poll, invitedFriends: invites, friendsToInvite})
+        }else{
+            res.render('poll', {poll, invitedFriends: undefined, friendsToInvite: undefined})
         }
-        res.render('poll', {poll, friends})
+        
     }catch(e){
         console.log(e)
         res.redirect('/')

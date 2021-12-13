@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 import { Socket } from "socket.io"
-import { FoundMovie } from "./types/types";
+import { FoundMovie, FullMovieInfo } from "./types/types";
 
 const RoomInvite = require('./models/roomInvite')
 const Poll = require('./models/poll')
@@ -16,7 +16,7 @@ exports = module.exports = function(io: Socket){
                 if(err){
                     console.log(err)
                 }else{
-                    if(poll){
+                    if(poll && !poll.voting){
                         if(poll.host.user.toString() == socket.userId.toString()){
                             poll.host.maxNumberOfVotes = socket.numberOfMoviesToAdd
                         }else{
@@ -39,7 +39,7 @@ exports = module.exports = function(io: Socket){
                 if(err){
                     console.log(err)
                 }else{
-                    if(poll){
+                    if(poll && !poll.voting){
                         if(poll.host.user.toString() == socket.userId.toString()){
                             socket.numberOfMoviesToAdd = poll.host.maxNumberOfVotes - poll.host.numberOfVotes
                         }else{
@@ -50,6 +50,7 @@ exports = module.exports = function(io: Socket){
                                 }
                             }
                         }
+                        socket.to(socket.roomId).emit('updateRoomInfo', poll.movies.length, poll.voters.length + 1)
                         socket.emit('updateRoomInfo', poll.movies.length, poll.voters.length + 1, socket.numberOfMoviesToAdd)
                     }
                 }   
@@ -121,7 +122,7 @@ exports = module.exports = function(io: Socket){
             }
         })
 
-        socket.on('addToQueue', async(imdbID: FoundMovie)=>{
+        socket.on('addToQueue', async(imdbID: string)=>{
             try{
                 if(socket.numberOfMoviesToAdd >= 1){
                     let movie = await Movie.findOne({imdbID})
@@ -139,7 +140,7 @@ exports = module.exports = function(io: Socket){
                                 if(err){
                                     console.log(err)
                                 }else{
-                                    poll.movies.push(newMovie)
+                                    poll.movies.push({movie: newMovie})
                                     poll.save()
                                     socket.numberOfMoviesToAdd--
                                     socket.to(socket.roomId).emit('updateRoomInfo', poll.movies.length, poll.voters.length + 1)
@@ -150,7 +151,7 @@ exports = module.exports = function(io: Socket){
                     }else{
                         const pollRoom = await Poll.findOne({_id: socket.roomId, movies: {$nin: [movie._id]}})
                         if(pollRoom){
-                            pollRoom.movies.push(movie)
+                            pollRoom.movies.push({ movie })
                             pollRoom.save()
                             socket.numberOfMoviesToAdd--
                             socket.to(socket.roomId).emit('updateRoomInfo', pollRoom.movies.length, pollRoom.voters.length + 1)
@@ -181,6 +182,33 @@ exports = module.exports = function(io: Socket){
                 }else{
                     socket.emit('checkIfMovieInDb', imbdId, 1)
                 }
+            }catch(e){
+                console.log(e)
+            }
+        })
+
+        socket.on('startVoting', async()=>{
+            try{
+                const poll = await Poll.findOne({ _id: socket.roomId })
+                    .populate('movies.movie')
+                // on objects remain
+                // Title, Realeased, Runtime, Plot, Poster
+
+                let moviesToSend = []
+                for(let i = 0; i < poll.movies.length; i++){
+                    moviesToSend.push({
+                        Title: poll.movies[i].movie.Title,
+                        Released: poll.movies[i].movie.Released,
+                        Runtime: poll.movies[i].movie.Runtime,
+                        Plot: poll.movies[i].movie.Plot,
+                        Poster: poll.movies[i].movie.Poster,
+                        imdbID: poll.movies[i].movie.imdbID
+                    })
+                }
+                poll.voting = true
+                await poll.save()
+                socket.to(socket.roomId).emit('votingRoomMovies', moviesToSend)
+                socket.emit('votingRoomMovies', moviesToSend)
             }catch(e){
                 console.log(e)
             }

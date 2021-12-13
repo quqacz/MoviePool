@@ -28,32 +28,47 @@ Polls.get('/', isLoggedIn, (req: Request, res: Response)=>{
 Polls.get('/:id', isLoggedIn, validateEntry, async(req: Request, res: Response)=>{
     try{
         const poll = await Poll.findOne({_id: req.params.id})
-        if(res.locals.currentUser._id.toString() === poll.host.user._id.toString()){
-            const user = await User.findOne({
-                _id: res.locals.currentUser._id
-            }).populate('friends')
-            const invites = await RoomInvite.find({ room: req.params.id })
-                .sort({ 'accepted': -1 })
-                .populate('to')
+        if(!poll.voting){
+            if(res.locals.currentUser._id.toString() === poll.host.user._id.toString()){
+                const user = await User.findOne({
+                    _id: res.locals.currentUser._id
+                }).populate('friends')
+                const invites = await RoomInvite.find({ room: req.params.id })
+                    .sort({ 'accepted': -1 })
+                    .populate('to')
 
-            const friendsToInvite = []
-            const invitedFriends = []
-            const friends = user.friends
+                const friendsToInvite = []
+                const invitedFriends = []
+                const friends = user.friends
 
-            for(let i = 0; i < invites.length; i++){
-                invitedFriends.push(invites[i].to._id.toString())
-            }
-
-            for(let i = 0; i < friends.length; i++){
-                if(!invitedFriends.includes(friends[i]._id.toString())){
-                    friendsToInvite.push(friends[i])
+                for(let i = 0; i < invites.length; i++){
+                    invitedFriends.push(invites[i].to._id.toString())
                 }
+
+                for(let i = 0; i < friends.length; i++){
+                    if(!invitedFriends.includes(friends[i]._id.toString())){
+                        friendsToInvite.push(friends[i])
+                    }
+                }
+                res.render('poll', {poll, invitedFriends: invites, friendsToInvite, moviesToVoteOn: []})
+            }else{
+                res.render('poll', {poll, invitedFriends: undefined, friendsToInvite: undefined, moviesToVoteOn: []})
             }
-            res.render('poll', {poll, invitedFriends: invites, friendsToInvite})
         }else{
-            res.render('poll', {poll, invitedFriends: undefined, friendsToInvite: undefined})
+            await poll.populate('movies.movie')
+            let moviesToSend = []
+            for(let i = 0; i < poll.movies.length; i++){
+                moviesToSend.push({
+                    Title: poll.movies[i].movie.Title,
+                    Released: poll.movies[i].movie.Released,
+                    Runtime: poll.movies[i].movie.Runtime,
+                    Plot: poll.movies[i].movie.Plot,
+                    Poster: poll.movies[i].movie.Poster,
+                    imdbID: poll.movies[i].movie.imdbID
+                })
+            }
+            res.render('poll', {poll, moviesToVoteOn: moviesToSend})
         }
-        
     }catch(e){
         console.log(e)
         res.redirect('/')

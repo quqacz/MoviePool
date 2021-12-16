@@ -213,5 +213,16 @@ exports = module.exports = function(io: Socket){
                 console.log(e)
             }
         })
+
+        socket.on('sendVote', async(votes: any)=>{
+            const poll = await Poll.findOne({ _id: socket.roomId})
+                .populate('movies.movie')
+
+            for(let i = 0; i < poll.movies.length; i++){
+                poll.movies[i].votes += votes[poll.movies[i].movie.imdbID]
+            }
+
+            await poll.save()
+        })
     })
 }

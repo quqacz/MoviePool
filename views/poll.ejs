@@ -38,20 +38,25 @@
 
             </div>
         </div>
+        <script>
+            const parseDataFromSite = false;
+        </script>
+    <%}else{%>
+        <script>
+            const parseDataFromSite = true;
+        </script>
+    <%}%>
+    <div id="voting">
+        <%for(let i = 0; i < moviesToVoteOn.length; i++){%>
+            <div>
+                <h3 class="movie_title"><%=moviesToVoteOn[i].Title%></h3>
+                <img src="<%=moviesToVoteOn[i].Poster%>" alt="<%=moviesToVoteOn[i].Title%>" class="movie_poster">
+                <p>Released <span class="movie_release"><%=moviesToVoteOn[i].Released%></span> Runtime <span class="movie_span"><%=moviesToVoteOn[i].Runtime%></span></p>
+                <p class="movie_plot"><%=moviesToVoteOn[i].Plot%></p>
+                <p class="movie_id"><%=moviesToVoteOn[i].imdbID%></p>
+            </div>
         <%}%>
-        <div id="voting">
-            <%for(let i = 0; i < moviesToVoteOn.length; i++){%>
-                <div>
-                    <h3><%=moviesToVoteOn[i].Title%></h3>
-                    <img src="<%=moviesToVoteOn[i].Poster%>" alt="<%=moviesToVoteOn[i].Title%>">
-                    <p>Released <%=moviesToVoteOn[i].Released%> Runtime <%=moviesToVoteOn[i].Runtime%></p>
-                    <p><%=moviesToVoteOn[i].Plot%></p>
-                    <button type="button">YES</button>
-                    <button type="button">Skip</button>
-                    <button type="button">NO</button>
-                </div>
-            <%}%>
-        </div>
+    </div>
 </div>  
 <%- include ('partials/socketConnection') %>
 <%if(currentUser._id.toString() === poll.host.user._id.toString()){%>

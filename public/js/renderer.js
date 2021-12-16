@@ -7,8 +7,14 @@ const statsWrapper = document.querySelector('#statsWrapper')
 const inviteList = document.querySelector('#inviteList')
 
 let numberOfMoviesToAdd = undefined;
-
+let moviesData = []
+const votes = {}
 socket.emit('joinRoom', roomId, userId)
+
+if(parseDataFromSite){
+    parseMoviesData();
+    renderVotingQueue(moviesData)
+}
 
 function getMovies(){
     socket.emit('fetchMovies', movieName.value)
@@ -75,6 +81,10 @@ function resetInviteList(){
 function resetAddingMoviesInterface(){
     if(addingMovies)
         addingMovies.innerHTML = ''
+}
+
+function resetVotingInterface(){
+    voting.innerHTML = ''
 }
 
 function showNumberOfMovies(number, movieName){
@@ -202,6 +212,7 @@ function renderInvites(friendsToInvite, invitedFriends){
 
 function renderVotingQueue(movies){
     resetAddingMoviesInterface()
+    resetVotingInterface()
     for(let i = 0; i < movies.length; i++){
         let wrap = document.createElement('div')
         
@@ -221,21 +232,24 @@ function renderVotingQueue(movies){
         voteYes.type = 'button'
         voteYes.innerHTML = 'YES'
         voteYes.addEventListener('click', function(){
-            socket.emit('vote', movies[i].imdbID, 1)
+            votes[movies[i].imdbID] = 1
+            wrap.parentNode.removeChild(wrap)
         })
 
         let skipMovie = document.createElement('button')
         skipMovie.type = 'button'
         skipMovie.innerHTML = 'Skip'
         skipMovie.addEventListener('click', function(){
-            socket.emit('vote', movies[i].imdbID, 0)
+            votes[movies[i].imdbID] = 0
+            wrap.parentNode.removeChild(wrap)
         })
 
         let voteNo = document.createElement('button')
         voteNo.type = 'button'
         voteNo.innerHTML = 'NO'
         voteNo.addEventListener('click', function(){
-            socket.emit('vote', movies[i].imdbID, -1)
+            votes[movies[i].imdbID] = -1
+            wrap.parentNode.removeChild(wrap)
         })
 
         wrap.appendChild(title)
@@ -246,5 +260,32 @@ function renderVotingQueue(movies){
         wrap.appendChild(skipMovie)
         wrap.appendChild(voteNo)
         voting.appendChild(wrap)
+    }
+    let sendButton = document.createElement('button')
+    sendButton.type = 'button'
+    sendButton.innerHTML = 'End Voting'
+    sendButton.addEventListener('click', function(){
+        socket.emit('sendVote', votes)
+    })
+    voting.appendChild(sendButton)
+}
+
+function parseMoviesData(){
+    const titles = document.querySelectorAll('.movie_title')
+    const posters = document.querySelectorAll('.movie_poster')
+    const releases = document.querySelectorAll('.movie_release')
+    const spans = document.querySelectorAll('.movie_span')
+    const plots = document.querySelectorAll('.movie_plot')
+    const ids = document.querySelectorAll('.movie_id')
+
+    for(let i = 0; i < titles.length; i++){
+        moviesData.push({
+            Title: titles[i].textContent,
+            Poster: posters[i].currentSrc,
+            Released: releases[i].textContent,
+            Span: spans[i].textContent,
+            Plot: plots[i].textContent,
+            imdbID: ids[i].textContent
+        })
     }
 }

@@ -31,6 +31,10 @@ socket.on('updateRoomInfo', (numberOfMovies, numberOfVoters, numberOfMoviesToAdd
 })
 
 socket.on('updateFriendList', (invitedFriends, friendsToInvite)=>{
-    console.log(invitedFriends, friendsToInvite)
     renderInvites(friendsToInvite, invitedFriends)
+})
+
+socket.on('votingRoomMovies', (movies)=>{
+    renderVotingQueue(movies)
+    moviesData = movies
 })

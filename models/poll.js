@@ -15,9 +15,13 @@ const PollSchema = new Schema({
             maxNumberOfVotes: {type: Number, default: 5}
         }
     ],
-    movies: [{type: Schema.Types.ObjectId, ref: 'Vote'}],
+    movies: [{
+            movie: {type: Schema.Types.ObjectId, ref: 'Movie'},
+            votes: {type: Number, default: 0}
+    }],
     winner: {type: Schema.Types.ObjectId, ref: 'Vote', default: undefined},
-    finished: {type: Boolean, default: false}
+    finished: {type: Boolean, default: false},
+    voting: {type: Boolean, default: false}
 });
 
 module.exports = mongoose.model('Poll', PollSchema);

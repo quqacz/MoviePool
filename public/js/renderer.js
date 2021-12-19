@@ -1,11 +1,20 @@
+const mainWrapper = document.querySelector('#mainWrapper')
 const movieName = document.querySelector('#movieName');
+const addingMovies = document.querySelector('#addingMovies')
+const voting = document.querySelector('#voting')
 const moviesWrapper = document.querySelector('#moviesWrapper')
 const statsWrapper = document.querySelector('#statsWrapper')
 const inviteList = document.querySelector('#inviteList')
 
 let numberOfMoviesToAdd = undefined;
-
+let moviesData = []
+const votes = {}
 socket.emit('joinRoom', roomId, userId)
+
+if(parseDataFromSite){
+    parseMoviesData();
+    renderVotingQueue(moviesData)
+}
 
 function getMovies(){
     socket.emit('fetchMovies', movieName.value)
@@ -17,93 +26,62 @@ function inviteFriend(friendId, roomId, hostId){
 
 function renderMovies(movies){
     for(let i = 0; i < movies.length; i++){
-        let wrap = document.createElement('div')
-
-        let title = document.createElement('h5')
-        title.innerHTML = movies[i].Title
-
-        let year = document.createElement('h6')
-        year.innerHTML = movies[i].Year
-
-        let img = document.createElement('img')
-        img.setAttribute('src', movies[i].Poster)
-
-        let addButton = document.createElement('button')
-        addButton.type = "button"
-        addButton.innerHTML = "Add to queue"
-        addButton.addEventListener('click', function(){
-            socket.emit('addToQueue', movies[i].imdbID)
-        })
-
-        let hr = document.createElement('hr')
-
-        wrap.appendChild(title)
-        wrap.appendChild(year)
-        wrap.appendChild(img)  
-        wrap.appendChild(addButton)
-        wrap.appendChild(hr) 
-        moviesWrapper.appendChild(wrap)
+        const wrap = renderElement('div', moviesWrapper)
+        renderElement('h5', wrap, {innerHTML: movies[i].Title})
+        renderElement('h6', wrap, {innerHTML: movies[i].Year})
+        renderElement('img', wrap, {}, {src: movies[i].Poster})
+        renderElement('button', wrap, {type: 'button', innerHTML: 'Add to queue', onclick: function(){socket.emit('addToQueue', movies[i].imdbID)}})
+        renderElement('hr', wrap)
     }
 }
 
 function renderError(arg){
-    let wrap = document.createElement('div')
-    let p = document.createElement('p')
-    p.textContent = arg;
-    wrap.appendChild(p)
-    moviesWrapper.appendChild(wrap)
+    let wrap = renderElement('div', moviesWrapper)
+    renderElement('p', wrap, {textContent: arg})
 }
 
 function resetMoviesRender(){
-    moviesWrapper.innerHTML = ''
+    if(moviesWrapper)
+        moviesWrapper.innerHTML = ''
 }
 
 function resetStatsRender(){
-    statsWrapper.innerHTML = ''
+    if(statsWrapper)
+        statsWrapper.innerHTML = ''
 }
 
 function resetInviteList(){
-    inviteList.innerHTML = ''
+    if(inviteList)
+        inviteList.innerHTML = ''
+}
+
+function resetAddingMoviesInterface(){
+    if(addingMovies)
+        addingMovies.innerHTML = ''
+}
+
+function resetVotingInterface(){
+    voting.innerHTML = ''
 }
 
 function showNumberOfMovies(number, movieName){
-    let wrap = document.createElement('div')
-    let h = document.createElement('h3')
-    h.innerHTML = `There ${number === 1 ?  'is one movie': 'are '+number+' movies '} for fraze "${movieName}"`
-    wrap.appendChild(h)
-    moviesWrapper.appendChild(wrap)
+    const wrap = renderElement('div', moviesWrapper)
+    renderElement('h3', wrap, {innerHTML: `There ${number === 1 ?  'is one movie': 'are '+number+' movies '} for fraze "${movieName}"`})
 }
 
 function renderPagination(total, movieName, page = 1){
-    let wrap = document.createElement('div')
-
-    let innerWrap = document.createElement('div')
-    innerWrap.classList.add('container')
+    const wrap = renderElement('div', moviesWrapper)
+    const innerWrap = renderElement('div', wrap, {}, {class: 'container'})
 
     if(page > 1){
-        let prev = document.createElement('button')
-        prev.innerHTML = '<'
-        prev.addEventListener('click', function(){
-            socket.emit('fetchMoreMovies', movieName, page - 1)
-        })
-        innerWrap.appendChild(prev)
+        renderElement('button', innerWrap, {innerHTML: '<', onclick: function(){ socket.emit('fetchMoreMovies', movieName, page - 1)}})
     }
     if(page !== 1 && page !== Math.ceil(total / 10)){
-        let current = document.createElement('button')
-        current.innerHTML = page
-        innerWrap.appendChild(current)
+        renderElement('button', innerWrap, {innerHTML: page})
     }
     if(page < Math.ceil(total / 10)){
-        let next = document.createElement('button')
-        next.innerHTML = '>'
-        next.addEventListener('click', function(){
-            socket.emit('fetchMoreMovies', movieName, page + 1)
-        })
-        innerWrap.appendChild(next)
+        renderElement('button', innerWrap, {innerHTML: '>', onclick: function(){ socket.emit('fetchMoreMovies', movieName, page + 1)}})
     }
-
-    wrap.appendChild(innerWrap)
-    moviesWrapper.appendChild(wrap)
 }
 
 function renderRoomStats(movies, voters, moviesToAdd){
@@ -118,59 +96,107 @@ function renderRoomStats(movies, voters, moviesToAdd){
     }
     
     resetStatsRender()
-    const wrapp = document.createElement('div');
-
-    const queueInfo = document.createElement('h4')
-    queueInfo.textContent = 'There '+ (movies > 1 ? 'are ': 'is ')+''+ movies + ' movie' + (movies > 1 ? 's ': ' ') + 'in the queue'
-
-    const votersInfo = document.createElement('h5')
-    votersInfo.textContent = voters+ ' voter' + (voters > 1 ? 's ': ' ') + 'is in the room'
-
-    wrapp.appendChild(queueInfo)
+    const wrapp = renderElement('div', statsWrapper);
+    renderElement('h4', wrapp, {textContent: 'There '+ (movies > 1 ? 'are ': 'is ')+''+ movies + ' movie' + (movies > 1 ? 's ': ' ') + 'in the queue'})
+    renderElement('h5', wrapp, {textContent: voters+ ' voter' + (voters > 1 ? 's ': ' ') + 'is in the room'})
 
     if(moviesToAdd !== undefined){
-        const additionsCount = document.createElement('h4')
-        additionsCount.textContent = 'You can add ' + moviesToAdd +' more movie'+ (moviesToAdd > 1 ? 's' : '')
-        wrapp.appendChild(additionsCount)
+        renderElement('h4', wrapp, {textContent: 'You can add ' + moviesToAdd +' more movie'+ (moviesToAdd > 1 ? 's' : '')})
     }
 
-    wrapp.appendChild(votersInfo)
-    statsWrapper.appendChild(wrapp)
+    if(hostId){
+        const startVoting = renderElement('button', wrapp, {type: 'button', innerHTML: 'Start voting'})
+        if(movies > 2){
+            startVoting.addEventListener('click', function(){
+                socket.emit('startVoting')
+            })
+        }else{
+            startVoting.disabled = true
+        }
+    }
 }
 
 function renderInvites(friendsToInvite, invitedFriends){
     resetInviteList()
     for(let i = 0; i < friendsToInvite.length; i++){
-        const wrap = document.createElement('div')
-        
-        const name = document.createElement('p')
-        name.textContent = friendsToInvite[i].nickname
-
-        const invButton = document.createElement('button')
-        invButton.type = 'button'
-        invButton.innerHTML = 'Invite'
-        invButton.addEventListener('click', function(){
-            socket.emit('sendRoomInvite', friendsToInvite[i]._id, roomId, userId)
-        })
-
-        wrap.append(name)
-        wrap.append(invButton)
-        inviteList.append(wrap)
+        const wrap = renderElement('div', inviteList)
+        renderElement('p', wrap, {textContent: friendsToInvite[i].nickname})
+        renderElement('button', wrap, {type: 'button', innerHTML: 'Invite', onclick: function(){socket.emit('sendRoomInvite', friendsToInvite[i]._id, roomId, userId)}})
     }
 
     for(let i = 0; i < invitedFriends.length; i++){
-        const wrap = document.createElement('div')
-        
-        const name = document.createElement('p')
-        name.textContent = invitedFriends[i].to.nickname
-
-        const invButton = document.createElement('button')
-        invButton.type = 'button'
-        invButton.innerHTML = invitedFriends[i].accepted ? 'Accepted' : 'Pending'
-        invButton.disabled = true
-        
-        wrap.append(name)
-        wrap.append(invButton)
-        inviteList.append(wrap)
+        const wrap = renderElement('div', inviteList)
+        renderElement('p', wrap, {textContent: invitedFriends[i].to.nickname})
+        renderElement('button', wrap, {type: 'button', innerHTML: invitedFriends[i].accepted ? 'Accepted' : 'Pending', disabled: true})
     }
+}
+
+function renderVotingQueue(movies){
+    resetAddingMoviesInterface()
+    resetVotingInterface()
+    for(let i = 0; i < movies.length; i++){
+        const wrap = renderElement('div', voting)
+        renderElement('h3', wrap, {textContent: movies[i].Title})
+        renderElement('img', wrap, {}, {src: movies[i].Poster})
+        renderElement('p', wrap, {textContent: `Released ${movies[i].Released} \t Runtime ${movies[i].Runtime}`})
+        renderElement('p', wrap, {textContent: movies[i].Plot})
+        renderElement('button', wrap, {type: 'button', innerHTML: 'YES', onclick: function(){votes[movies[i].imdbID] = 1; wrap.parentNode.removeChild(wrap)}})
+        renderElement('button', wrap, {type: 'button', innerHTML: 'SKIP', onclick: function(){votes[movies[i].imdbID] = 0; wrap.parentNode.removeChild(wrap)}})
+        renderElement('button', wrap, {type: 'button', innerHTML: 'NO', onclick: function(){votes[movies[i].imdbID] = -1; wrap.parentNode.removeChild(wrap)}})
+    }
+    renderElement('button', voting, {type: 'button', innerHTML: 'End Voting', onclick: function(){socket.emit('sendVote', votes)}})
+}
+
+function parseMoviesData(){
+    const titles = document.querySelectorAll('.movie_title')
+    const posters = document.querySelectorAll('.movie_poster')
+    const releases = document.querySelectorAll('.movie_release')
+    const spans = document.querySelectorAll('.movie_span')
+    const plots = document.querySelectorAll('.movie_plot')
+    const ids = document.querySelectorAll('.movie_id')
+
+    for(let i = 0; i < titles.length; i++){
+        moviesData.push({
+            Title: titles[i].textContent,
+            Poster: posters[i].currentSrc,
+            Released: releases[i].textContent,
+            Span: spans[i].textContent,
+            Plot: plots[i].textContent,
+            imdbID: ids[i].textContent
+        })
+    }
+}
+
+// options keys:
+// innerHtml, textContent, type, onclick, disabled, role
+
+// attributes:
+// src, css classes
+function renderElement(element, parent = undefined, options = {}, attributes = {}){
+    const el = document.createElement(element)
+    const optionsKeys = Object.keys(options)
+    const attributesKeys = Object.keys(attributes)
+
+    for(let i = 0; i < optionsKeys.length; i++){
+        el[optionsKeys[i]] = options[optionsKeys[i]]
+    }
+
+    for(let i = 0; i < attributesKeys.length; i++){
+        switch(attributesKeys[i]){
+            case 'src':
+                el.setAttribute('src', attributes[attributesKeys[i]]) 
+                break
+            case 'class':
+                let classes = attributes[attributesKeys[i]].split(' ')
+                for(let j = 0; j < classes.length; j++){
+                    el.classList.add(classes[j])
+                }
+                break
+        }
+    }
+
+    if(parent)
+        parent.appendChild(el)
+        
+    return el
 }

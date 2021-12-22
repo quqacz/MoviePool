@@ -38,3 +38,12 @@ socket.on('votingRoomMovies', (movies)=>{
     renderVotingQueue(movies)
     moviesData = movies
 })
+
+socket.on('waitingForResaults', ()=>{
+    renderWaitingAnim()
+})
+
+socket.on('sendWinnerInfo', (movie)=>{
+    renderWinnerInfo(movie)
+    console.log(movie)
+})

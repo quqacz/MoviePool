@@ -42,9 +42,15 @@
             const parseDataFromSite = false;
         </script>
     <%}else{%>
-        <script>
-            const parseDataFromSite = true;
-        </script>
+        <%if(!poll.finished){%>
+            <script>
+                const parseDataFromSite = true;
+            </script>
+        <%}else{%>
+            <script>
+                const parseDataFromSite = false;
+            </script>  
+        <%}%>
     <%}%>
     <div id="voting">
         <%for(let i = 0; i < moviesToVoteOn.length; i++){%>
@@ -54,6 +60,15 @@
                 <p>Released <span class="movie_release"><%=moviesToVoteOn[i].Released%></span> Runtime <span class="movie_span"><%=moviesToVoteOn[i].Runtime%></span></p>
                 <p class="movie_plot"><%=moviesToVoteOn[i].Plot%></p>
                 <p class="movie_id"><%=moviesToVoteOn[i].imdbID%></p>
+            </div>
+        <%}%>
+        <%if(poll.winner.movie){%>
+            <div class="container">
+                <h1><%= poll.winner.movie.Title%></h1>
+                <h4>Released <%= poll.winner.movie.Released%>, rintime <%= poll.winner.movie.Runtime%></h4>
+                <img src="<%= poll.winner.movie.Poster%>" alt="<%= poll.winner.movie.Title%>">
+                <p><%= poll.winner.movie.Plot%></p>
+                <p>Score <%= poll.winner.movie.imdbRating%> from <%= poll.winner.movie.imdbVotes%> votes</p>
             </div>
         <%}%>
     </div>

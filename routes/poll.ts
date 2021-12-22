@@ -54,7 +54,7 @@ Polls.get('/:id', isLoggedIn, validateEntry, async(req: Request, res: Response)=
             }else{
                 res.render('poll', {poll, invitedFriends: undefined, friendsToInvite: undefined, moviesToVoteOn: []})
             }
-        }else{
+        }else if(poll.voting && !poll.finished){
             await poll.populate('movies.movie')
             let moviesToSend = []
             for(let i = 0; i < poll.movies.length; i++){
@@ -68,6 +68,9 @@ Polls.get('/:id', isLoggedIn, validateEntry, async(req: Request, res: Response)=
                 })
             }
             res.render('poll', {poll, moviesToVoteOn: moviesToSend})
+        }else if(poll.finished){
+            await poll.populate('winner.movie')
+            res.render('poll', {poll, moviesToVoteOn: []})
         }
     }catch(e){
         console.log(e)

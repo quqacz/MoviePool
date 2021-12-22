@@ -16,13 +16,19 @@ exports = module.exports = function(io: Socket){
                 if(err){
                     console.log(err)
                 }else{
-                    if(poll && !poll.voting){
+                    if(poll){
                         if(poll.host.user.toString() == socket.userId.toString()){
                             poll.host.maxNumberOfVotes = socket.numberOfMoviesToAdd
+                            poll.host.isConnected = false
                         }else{
-                            let node = poll.voters.find((element: any)=> {element.voter.toString() === socket.userId.toString()})
-                            if(node)
-                                node.numberOfVotes = socket.numberOfMoviesToAdd
+                            const voters = poll.voters
+                            for(let i = 0; i < voters.length; i++){
+                                if(voters[i].voter._id.toString() === socket.userId.toString()){
+                                    voters[i].maxNumberOfVotes = socket.numberOfMoviesToAdd
+                                    voters[i].isConnected = false
+                                    break
+                                }
+                            }
                         }
                         poll.save()
                     }
@@ -42,16 +48,36 @@ exports = module.exports = function(io: Socket){
                     if(poll && !poll.voting){
                         if(poll.host.user.toString() == socket.userId.toString()){
                             socket.numberOfMoviesToAdd = poll.host.maxNumberOfVotes - poll.host.numberOfVotes
+                            poll.host.isConnected = true
                         }else{
                             const voters = poll.voters
                             for(let i = 0; i < voters.length; i++){
                                 if(voters[i].voter._id.toString() === socket.userId.toString()){
                                     socket.numberOfMoviesToAdd = voters[i].maxNumberOfVotes - voters[i].numberOfVotes
+                                    voters[i].isConnected = true
+                                    break
                                 }
                             }
                         }
+                        poll.save()
                         socket.to(socket.roomId).emit('updateRoomInfo', poll.movies.length, poll.voters.length + 1)
                         socket.emit('updateRoomInfo', poll.movies.length, poll.voters.length + 1, socket.numberOfMoviesToAdd)
+                    }else if(poll && poll.voting){
+                        if(poll.host.user.toString() == socket.userId.toString()){
+                            poll.host.isConnected = true
+                            poll.host.isVoting = true
+                            return
+                        }
+                        const voters = poll.voters
+                        for(let i = 0; i < voters.length; i++){
+                            if(voters[i].voter._id.toString() === socket.userId.toString()){
+                                socket.numberOfMoviesToAdd = voters[i].maxNumberOfVotes - voters[i].numberOfVotes
+                                voters[i].isConnected = true
+                                voters[i].isVoting = true
+                                return
+                            }
+                        }
+                        poll.save()
                     }
                 }   
             })
@@ -149,7 +175,7 @@ exports = module.exports = function(io: Socket){
                             })
                         })
                     }else{
-                        const pollRoom = await Poll.findOne({_id: socket.roomId, movies: {$nin: [movie._id]}})
+                        const pollRoom = await Poll.findOne({_id: socket.roomId, 'movies.movie': {$nin: [movie._id]}})
                         if(pollRoom){
                             pollRoom.movies.push({ movie })
                             pollRoom.save()
@@ -192,7 +218,7 @@ exports = module.exports = function(io: Socket){
                 const poll = await Poll.findOne({ _id: socket.roomId })
                     .populate('movies.movie')
                 // on objects remain
-                // Title, Realeased, Runtime, Plot, Poster
+                // Title, Realeased, Runtime, Plot, Poster, imdbId
 
                 let moviesToSend = []
                 for(let i = 0; i < poll.movies.length; i++){
@@ -206,6 +232,20 @@ exports = module.exports = function(io: Socket){
                     })
                 }
                 poll.voting = true
+
+                // loop to change status of connectet nodes
+                for(let i = 0; i < poll.voters.length; i++){
+                    let node = poll.voters[i]
+                    if(node.isConnected){
+                        node.isVoting = true
+                    }
+                }
+
+                //check if host is connected
+                if(poll.host.isConnected){
+                    poll.host.isVoting = true
+                }
+
                 await poll.save()
                 socket.to(socket.roomId).emit('votingRoomMovies', moviesToSend)
                 socket.emit('votingRoomMovies', moviesToSend)
@@ -218,10 +258,52 @@ exports = module.exports = function(io: Socket){
             const poll = await Poll.findOne({ _id: socket.roomId})
                 .populate('movies.movie')
 
-            for(let i = 0; i < poll.movies.length; i++){
-                poll.movies[i].votes += votes[poll.movies[i].movie.imdbID]
+            const voters = poll.voters
+            const movies = poll.movies
+            let winner = poll.movies[0]
+            // add vote to overall score
+            for(let i = 0; i < movies.length; i++){
+                movies[i].votes += votes[movies[i].movie.imdbID]
             }
 
+            // set flag for completed voting
+            if(poll.host.user.toString() == socket.userId.toString()){
+                poll.host.isDoneVoting = true
+            }else{
+                for(let i = 0; i < voters.length; i++){
+                    if(voters[i].voter._id.toString() === socket.userId.toString()){
+                        voters[i].isDoneVoting = true
+                        break
+                    }
+                }
+            }
+
+            // check if everybody is done with woting
+            let isVotingDone = true
+            const host = poll.host
+            if(!(host.isDoneVoting && host.isVoting)){
+                isVotingDone = false
+            }
+            for(let i = 0; i < voters.length; i++){
+                if(!(voters[i].isDoneVoting && voters[i].isVoting)){
+                    isVotingDone = false
+                }
+            }
+
+            if(!isVotingDone){
+                socket.emit('waitingForResaults')
+            }else{
+                poll.finished = true
+                for(let i = 1; i < movies.length; i++){
+                    if(movies[i].votes > winner.votes){
+                        winner = movies[i]
+                    }
+                }
+                socket.to(socket.roomId).emit('sendWinnerInfo', winner.movie)
+                socket.emit('sendWinnerInfo', winner.movie)
+            }
+            poll.winner.movie = winner.movie
+            poll.winner.votes = winner.votes
             await poll.save()
         })
     })

@@ -147,6 +147,23 @@ function renderVotingQueue(movies){
     renderElement('button', voting, {type: 'button', innerHTML: 'End Voting', onclick: function(){socket.emit('sendVote', votes)}})
 }
 
+function renderWaitingAnim(){
+    resetVotingInterface()
+    const wrap = renderElement('div', voting, {}, {class: 'container'})
+    renderElement('h3', wrap, {textContent: 'Voting in progress'})
+    renderElement('p', wrap, {textContent: 'Waiting for others to end voting'})
+}
+
+function renderWinnerInfo(movie){
+    resetVotingInterface()
+    const wrap = renderElement('div', voting, {}, {class: 'container'})
+    renderElement('h1', wrap, {textContent: movie.Title})
+    renderElement('h4', wrap, {textContent: `Released ${movie.Released}, runtime ${movie.Runtime}`})
+    renderElement('img', wrap, {}, {src: movie.Poster})
+    renderElement('p', wrap, {textContent: movie.Plot})
+    renderElement('p', wrap, {textContent: `Score ${movie.imdbRating} from ${movie.imdbVotes} votes`})
+}
+
 function parseMoviesData(){
     const titles = document.querySelectorAll('.movie_title')
     const posters = document.querySelectorAll('.movie_poster')

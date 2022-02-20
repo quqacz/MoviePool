@@ -1,4 +1,49 @@
 *{
     margin: 0;
     padding: 0;
+    --navbar-height: 40px;
+}
+
+.space-25{
+    margin-top: 25px;
+}
+
+.padding-0{
+    padding: 0 !important;
+}
+
+.movie-info-wrapper{
+    width: 100%;
+}
+
+.align-center{
+    display: flex;
+    justify-content: center;
+}
+
+.width-40{
+    width: 40%;
+    position: relative;
+    left: 30%;
+}
+
+.text-align-center{
+    text-align: center;
+}
+
+.movie-poster{
+    border-radius: 8px;
+    min-width: 30%;
+    max-width: 40%;
+    height: auto;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.main-page-body{
+    height: 25vh;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+    background-size: cover;
+    /* filter: blur(4px) */
 }

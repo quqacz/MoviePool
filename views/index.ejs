@@ -1,13 +1,45 @@
 <%- include ('partials/htmlHeader') %>
+    <div class="container space-25">
+        <h1>Upcoming movies:</h1>
+        <div class="space-25">
+            <% for(let i = 0; i < movies.length; i++){%>
+                <div class="d-flex flex-column justify-content-center space-25 movie-info-wrapper" id="movie-<%=i%>">
+                    <div class="p-2 align-center">
+                        <h1><%= movies[i].Title%></h1>
+                    </div>
+                    <div class="p-2 align-center">
+                        <img src="<%= movies[i].Poster%>" alt="<%=movies[i].Title%> poster" class="movie-poster">
+                    </div>
+                    <div class="p-2 padding-0 align-center">
+                        <h4><%= movies[i].Year%></h4>
+                    </div>
+                    <div class="p-2 width-40 align-center text-align-center"><%= movies[i].Plot%></div>
+                    
+                </div>
+            <%}%>
+        </div>  
+    </div>
     <div class="container">
-        <h1>MAIN PAGE FELLOW HUMANS</h1>
         <% for(let i = 0; i < movies.length; i++){%>
-            <div>
-                <h3><%= movies[i].Title %></h3>
-                <h4><%= movies[i].Year%></h4>
-                <p><%= movies[i].Plot%></p>
-                <img src="<%= movies[i].Poster%>" alt="<%=movies[i].Title%> poster">
-            </div>
+            <a href="#<%=i%>"><%=movies[i].Title%></a>
         <%}%>
     </div>
+    <div class="box"></div>
+    <div id="message">Please scroll to check if the box is visible</div>
+    
+    <script>
+        let movies = [];
+        let numberOfmovies = parseInt("<%=movies.length%>");
+        <% for(let i = 0; i < movies.length; i++){%>
+            if(true){
+                let movie = {}
+                movie.title = '<%= movies[i].Title%>'
+                movie.poster = '<%= movies[i].Poster%>'
+                movie.year = '<%= movies[i].Year%>'
+                movie.plot = '<%= movies[i].Plot%>'
+                movies.push(movie)
+            }
+        <%}%>
+    </script>  
+    <script src="/js/mainPage.js"></script>
 <%- include ('partials/htmlFooter') %>

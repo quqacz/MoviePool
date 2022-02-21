@@ -52,12 +52,10 @@
                     </div>
                 </div>
 
-                <!-- <input type="text" placeholder="Searched movie" name="movieName" id="movieName"> 
-                <button type="button" onclick="getMovies()">Search</button> 
-                 -->
-                <div id="moviesWrapper">
-    
-                </div>
+
+                <div id="moviesWrapper"></div>
+
+
             </div>
             <script>
                 const parseDataFromSite = false;
@@ -94,6 +92,7 @@
             <%}%>
         </div>
     </div>  
+    <%- include ('partials/bottomFooter') %> 
 </div>
 
 
@@ -110,5 +109,5 @@
 <%}%>
 <script src="/js/renderer.js"></script>
 <script src="/js/pollRoomSocket.js"></script>
-<%- include ('partials/bottomFooter') %> 
+
 <%- include ('partials/htmlFooter') %>

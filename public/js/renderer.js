@@ -105,8 +105,9 @@ function renderRoomStats(movies, voters, moviesToAdd){
     }
 
     if(hostId){
-        const startVoting = renderElement('button', wrapp, {type: 'button', innerHTML: 'Start voting'})
+        const startVoting = renderElement('button', wrapp, {type: 'button', innerHTML: 'Start voting'}, {class: 'start-button'})
         if(movies > 2){
+            startVoting.classList.add('active')
             startVoting.addEventListener('click', function(){
                 socket.emit('startVoting')
             })

@@ -1,7 +1,7 @@
 *{
     margin: 0;
     padding: 0;
-    --navbar-height: 40px;
+    --navbar-height: 56px;
     font-family: 'Roboto', sans-serif;
 }
 
@@ -109,3 +109,18 @@ footer.position-bottom{
     position: absolute;
     bottom: 0;
 }
+
+.vh-without-nav{
+    height: calc(100vh - var(--navbar-height));
+}
+
+.gradient-custom {
+    /* fallback for old browsers */
+    background: rgb(221, 221, 221);
+  
+    /* Chrome 10-25, Safari 5.1-6 */
+    background: -webkit-linear-gradient(to right, rgb(235, 235, 235), rgb(212, 212, 212));
+  
+    /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    background: linear-gradient(to right, rgb(235, 235, 235), rgb(212, 212, 212))
+  }

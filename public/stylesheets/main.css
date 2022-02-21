@@ -1,4 +1,111 @@
 *{
     margin: 0;
     padding: 0;
+    --navbar-height: 40px;
+    font-family: 'Roboto', sans-serif;
+}
+
+footer{
+    width: 100%;
+    height: 25px;
+    background-color: whitesmoke;
+    color: #212529;
+    text-align: center;
+}
+
+/* ///////////////////////////////////
+///////////////////////////////////
+        MAIN PAGE STYLES
+///////////////////////////////////
+/////////////////////////////////// */
+
+.background-overlay{
+    position: absolute;
+    left: 0;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.85);
+}
+
+.upcoming-movies-header{
+    color: whitesmoke;
+}
+
+.movie-title{
+    color: #212529;
+}
+
+.all-movies-wrapper{
+    position: relative;
+    left: 10%;
+    width: 80%;
+}
+
+.space-25{
+    margin-top: 25px;
+}
+
+.padding-0{
+    padding: 0 !important;
+}
+
+.movie-info-wrapper{
+    width: 70%;
+    position: relative;
+    left: 15%;
+    background-color: whitesmoke;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    border-radius: 4px;
+    padding: 15px;
+}
+
+.align-center{
+    display: flex;
+    justify-content: center;
+}
+
+.width-60{
+    width: 60%;
+    position: relative;
+    left: 20%;
+}
+
+.text-align-center{
+    text-align: center;
+}
+
+.movie-poster{
+    border-radius: 8px;
+    min-width: 30%;
+    max-width: 40%;
+    height: auto;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.main-page-body{
+    height: 25vh;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+    background-size: cover;
+    /* filter: blur(4px) */
+}
+
+.movies-navigation-panel{
+    width: 10%;
+}
+
+.content-wrapper{
+    display: flex;
+    flex-flow: row nowrap;
+}
+
+/* ///////////////////////////////////
+///////////////////////////////////
+        LOGIN PAGE STYLES
+///////////////////////////////////
+/////////////////////////////////// */
+
+footer.position-bottom{
+    position: absolute;
+    bottom: 0;
 }

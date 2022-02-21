@@ -5,12 +5,12 @@
         <div class="content-wrapper">
             <div class="space-25">
                 <% for(let i = 0; i < movies.length; i++){%>
-                    <div class="d-flex flex-column justify-content-center space-25 movie-info-wrapper" id="movie-<%=i%>">
+                    <div class="d-flex flex-column justify-content-center space-25 movie-info-wrapper default-box-shadow" id="movie-<%=i%>">
                         <div class="p-2 align-center">
                             <h1 class="movie-title"><%= movies[i].Title%></h1>
                         </div>
                         <div class="p-2 align-center">
-                            <img src="<%= movies[i].Poster%>" alt="<%=movies[i].Title%> poster" class="movie-poster">
+                            <img src="<%= movies[i].Poster%>" alt="<%=movies[i].Title%> poster" class="movie-poster default-box-shadow">
                         </div>
                         <div class="p-2 padding-0 align-center">
                             <h4><%= movies[i].Year%></h4>

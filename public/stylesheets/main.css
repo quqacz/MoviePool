@@ -13,6 +13,40 @@ footer{
     text-align: center;
 }
 
+h1{
+    color: #212529;
+}
+.space-25{
+    margin-top: 25px;
+}
+
+.padding-0{
+    padding: 0 !important;
+}
+
+.text-align-center{
+    text-align: center;
+}
+
+.default-box-shadow{
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.whitesmoke-fill{
+    background-color: whitesmoke;
+}
+
+.gradient-custom {
+    /* fallback for old browsers */
+    background: rgb(221, 221, 221);
+  
+    /* Chrome 10-25, Safari 5.1-6 */
+    background: -webkit-linear-gradient(to right, rgb(235, 235, 235), rgb(212, 212, 212));
+  
+    /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    background: linear-gradient(to right, rgb(235, 235, 235), rgb(212, 212, 212))
+}
+
 /* ///////////////////////////////////
 ///////////////////////////////////
         MAIN PAGE STYLES
@@ -38,14 +72,7 @@ footer{
     position: relative;
     left: 10%;
     width: 80%;
-}
-
-.space-25{
-    margin-top: 25px;
-}
-
-.padding-0{
-    padding: 0 !important;
+    padding-bottom: 25px;
 }
 
 .movie-info-wrapper{
@@ -53,7 +80,6 @@ footer{
     position: relative;
     left: 15%;
     background-color: whitesmoke;
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
     border-radius: 4px;
     padding: 15px;
 }
@@ -69,16 +95,11 @@ footer{
     left: 20%;
 }
 
-.text-align-center{
-    text-align: center;
-}
-
 .movie-poster{
     border-radius: 8px;
     min-width: 30%;
     max-width: 40%;
     height: auto;
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 .main-page-body{
@@ -114,13 +135,95 @@ footer.position-bottom{
     height: calc(100vh - var(--navbar-height));
 }
 
-.gradient-custom {
-    /* fallback for old browsers */
-    background: rgb(221, 221, 221);
-  
-    /* Chrome 10-25, Safari 5.1-6 */
-    background: -webkit-linear-gradient(to right, rgb(235, 235, 235), rgb(212, 212, 212));
-  
-    /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-    background: linear-gradient(to right, rgb(235, 235, 235), rgb(212, 212, 212))
-  }
+  /* ///////////////////////////////////
+///////////////////////////////////
+        USER PROFILE STYLES
+///////////////////////////////////
+/////////////////////////////////// */
+
+.all-wrapper{
+    position: relative;
+    top: 0;
+    width: 100%;
+    padding-top: 25px;
+}
+
+.section-label{
+    font-size: 1.25rem;
+}
+
+.user-name{
+    font-size: 2rem;
+}
+
+#friend-list{
+    transition: 1s;
+}
+
+.friends-button{
+    background-color: inherit;
+    border: none;
+    font-size: 2rem;
+}
+
+.wrapped{
+    height: 0;
+    display: none;
+}
+
+.friend-div{
+    align-items: center;
+    padding-left: 8px;
+    border-radius: 8px;
+}
+
+.poll-info{
+    padding: 16px;
+    border-radius: 8px;
+    margin: 25px;
+}
+
+.entry-with-code{
+    padding: 4px 8px;
+    border-radius: 4px;
+    text-decoration: none;
+    background-color: #212529;
+    color: aliceblue;
+}
+
+.entry-with-code:hover{
+    text-decoration: none;
+    color: whitesmoke;
+}
+
+.entry-with-code:visited{
+    text-decoration: none;
+    color: aliceblue;
+}
+
+
+  /* ///////////////////////////////////
+///////////////////////////////////
+        NOTIFICATIONS STYLES
+///////////////////////////////////
+/////////////////////////////////// */
+
+.notification-outter-wrapper{
+    min-height: calc(100vh - var(--navbar-height));
+    padding-top: 25px;
+}
+
+.notification{
+    background-color: whitesmoke;
+    border-radius: 8px;
+    padding: 8px;
+    margin: 25px;
+    align-items: center;
+}
+
+.wide-button{
+    display: block;
+    width: 80%;
+    margin: auto;
+    text-align: center;
+}

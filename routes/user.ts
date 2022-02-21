@@ -16,9 +16,12 @@ Users.get('/:id', isLoggedIn, isUser, async (req: Request, res: Response)=>{
                 {'host.user': req.params.id},
                 {'voters.voter': {$in: [ req.params.id ]}}
             ]
-        }).sort({
-            finished: -1
         })
+        .populate('winner.movie')
+        .sort({
+            data: -1
+        })
+        console.log(polls[0])
         res.render('userProfile', {user, friends: undefined, polls})
     }catch(e){
         console.log(e)
@@ -34,7 +37,15 @@ Users.post('/:id/find', isLoggedIn, isUser, async (req: Request, res: Response)=
             nickname: {"$regex": friendName, $nin: [user.nickname]},
              _id: {$nin: user.friends}}
             )
-        res.render('userProfile', {user, friends, polls: undefined})
+        const polls = await Poll.find({
+            $or: [
+                {'host.user': req.params.id},
+                {'voters.voter': {$in: [ req.params.id ]}}
+            ]
+        }).sort({
+            finished: -1
+        })
+        res.render('userProfile', {user, friends, polls})
     }catch(e){
         console.log(e)
         res.redirect('/');

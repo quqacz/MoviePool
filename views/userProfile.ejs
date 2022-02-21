@@ -1,49 +1,85 @@
 <%- include ('partials/htmlHeader') %>
-<div class="container">
-    <h1>PROFILE USER OR SOME OTHER SHIT</h1>
-    <h3><%= user.username%></h3>
-    <h3><%= user.nickname%></h3>
-    <h4>
-        <form action="/poll/join/code" method="post">
-            <input type="text" name="entryCode" placeholder="Join Poll Room With Code">
-            <button type="submit">Join</button>
-        </form>
-    </h4>
+<div class="all-wrapper gradient-custom">
+    <div class="container">
+        <h1>Welcome <%= user.nickname%>!</h1>
 
-    <%for(let i = 0; i < user.friends.length; i++){%>
-        <p><%= user.friends[i].username%></p>
-        <p><%= user.friends[i].nickname%></p>
-    <%}%>
+        <div class="row">
 
-    <form action="/user/<%=user._id%>/find" method="post">
-        <input type="text" placeholder="User nickname" name='friendName'>
-        <button type="submit">Search</button>
-    </form>
+            <div class="col">
+                <form action="/poll/join/code" method="post">
+                    <label for="room-code" class="form-label">Join poll room with code</label>
+                    <div class="input-group mb-3">
+                        <input type="text" name="entryCode" id="room-code" class="form-control" placeholder="Code" aria-label="Invitation Code" aria-describedby="join-room-button">
+                        <button class="btn btn-outline-secondary" type="submit" id="join-room-button">Join</button>
+                      </div>
+                </form>
+            </div>
 
-    <%if(friends){%>
-        <%for(let i = 0; i < friends.length; i++){%>
-            <hr>
-            <h3><%= friends[i].username%></h3>
-            <h3><%= friends[i].nickname%></h3>
-            <form action="/user/<%=user._id%>/add/<%=friends[i]._id%>" method="post">
-                <button type="submit">Add Friend</button>
-            </form>
+            <div class="col">
+                <form action="/user/<%=user._id%>/find" method="post">
+                    <label for="friend-name" class="form-label">Search users</label>
+                    <div class="input-group mb-3">
+                        <input type="text" name="friendName" id="friend-name" class="form-control" placeholder="User nickname" aria-label="User Nickname" aria-describedby="search-friends-button">
+                        <button class="btn btn-outline-secondary" type="submit" id="search-friends-button">Search</button>
+                      </div>
+                </form>
+            </div>
+
+        </div>
+        
+        <label for="friend-list-wrapper" class="section-label">Your friends</label>
+        <div id="friend-list-wrapper">
+
+            <div id="friend-list">
+                <%for(let i = 0; i < user.friends.length; i++){%>
+                    <div>
+                        <p class="user-name"><%= user.friends[i].nickname%></p>
+                    </div>
+                <%}%>
+            </div>
+
+            <div class="text-align-center">
+                <button class="friends-button" onclick="wrap()"><i class="bi bi-arrow-bar-up" id="wrappButton"></i></button>
+            </div>
+        </div>
+
+        <%if(friends){%>
+            <hr class="space-25">
+            <label for="friends-to-add" class="section-label">Users to add</label>
+            <div id="friends-to-add">
+                <%for(let i = 0; i < friends.length; i++){%>
+                    <form action="/user/<%=user._id%>/add/<%=friends[i]._id%>" method="post">
+                        <div class="row">
+                            <div class="col">
+                                <p class="user-name"><%= friends[i].nickname%></p>
+                            </div>
+                            <div class="col">
+                                <button type="submit" class="btn btn-secondary">Add Friend</button>
+                            </div>
+                        </div>
+                    </form>
+                <%}%>
+            </div>
         <%}%>
-    <%}%>
-
-    <hr>
-
-    <%for(let i = 0; i < polls.length; i++){%>
-        <p><%= polls[i].data%></p>
-        <%if(!polls[i].finished){%>
-            <p>Entry code <%= polls[i].entryCode%></p>
-            <a href="/poll/<%=polls[i]._id%>"> JOIN TO ROOM</a>
-        <%}else{%>
-            <p>Winner <%= polls[i].winner.imdbId%></p>
-        <%}%>
-        <p>Number of movies <%= polls[i].movies.length%></p>
-        <p>Number of voters <%= polls[i].voters.length%></p>
-    <%}%>
-
+    
+        <hr>
+        <label for="polls-wrapper" class="section-label">Polls you participated in</label>
+        <div class="polls-wrapper" id="polls-wrapper">
+            <%for(let i = 0; i < polls.length; i++){%>
+                <p><%= polls[i].data%></p>
+                <%if(!polls[i].finished){%>
+                    <p>Entry code <%= polls[i].entryCode%></p>
+                    <a href="/poll/<%=polls[i]._id%>"> JOIN TO ROOM</a>
+                <%}else{%>
+                    <p>Winner <%= polls[i].winner.imdbId%></p>
+                <%}%>
+                <p>Number of movies <%= polls[i].movies.length%></p>
+                <p>Number of voters <%= polls[i].voters.length%></p>
+            <%}%>
+        </div>
+    
+    </div>
+    <script src="/js/userProfile.js"></script>
+    <%- include ('partials/footer') %>
 </div>
 <%- include ('partials/htmlFooter') %>

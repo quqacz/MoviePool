@@ -5,6 +5,20 @@
     font-family: 'Roboto', sans-serif;
 }
 
+footer{
+    width: 100%;
+    height: 25px;
+    background-color: whitesmoke;
+    color: #212529;
+    text-align: center;
+}
+
+/* ///////////////////////////////////
+///////////////////////////////////
+        MAIN PAGE STYLES
+///////////////////////////////////
+/////////////////////////////////// */
+
 .background-overlay{
     position: absolute;
     left: 0;
@@ -13,7 +27,11 @@
 }
 
 .upcoming-movies-header{
-    color: antiquewhite;
+    color: whitesmoke;
+}
+
+.movie-title{
+    color: #212529;
 }
 
 .all-movies-wrapper{
@@ -79,4 +97,15 @@
 .content-wrapper{
     display: flex;
     flex-flow: row nowrap;
+}
+
+/* ///////////////////////////////////
+///////////////////////////////////
+        LOGIN PAGE STYLES
+///////////////////////////////////
+/////////////////////////////////// */
+
+footer.position-bottom{
+    position: absolute;
+    bottom: 0;
 }

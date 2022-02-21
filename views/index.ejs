@@ -1,18 +1,13 @@
 <%- include ('partials/htmlHeader') %>
-    <div class="background-overlay">
+<div class="background-overlay">
     <div class="space-25 all-movies-wrapper">
         <h1 class="upcoming-movies-header">Upcoming movies:</h1>
         <div class="content-wrapper">
-            <div class="movies-navigation-panel">
-                <% for(let i = 0; i < movies.length; i++){%>
-                    <a href="#movie-<%=i%>"><%=movies[i].Title%></a>
-                <%}%>
-            </div>
             <div class="space-25">
                 <% for(let i = 0; i < movies.length; i++){%>
                     <div class="d-flex flex-column justify-content-center space-25 movie-info-wrapper" id="movie-<%=i%>">
                         <div class="p-2 align-center">
-                            <h1><%= movies[i].Title%></h1>
+                            <h1 class="movie-title"><%= movies[i].Title%></h1>
                         </div>
                         <div class="p-2 align-center">
                             <img src="<%= movies[i].Poster%>" alt="<%=movies[i].Title%> poster" class="movie-poster">
@@ -27,8 +22,9 @@
             </div>  
         </div>
     </div>
+    <%- include ('partials/footer') %>
 </div>
-    
+
     <script>
         let movies = [];
         let numberOfmovies = parseInt("<%=movies.length%>");

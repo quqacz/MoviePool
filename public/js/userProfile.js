@@ -2,7 +2,7 @@ const wrapButton = document.querySelector('.friends-button')
 const friendsList = document.querySelector('#friend-list')
 const icon = document.querySelector('#wrappButton')
 
-let wrapped = true
+let wrapped = false
 
 function wrap(){
     if(!wrapped){

@@ -18,10 +18,10 @@ Users.get('/:id', isLoggedIn, isUser, async (req: Request, res: Response)=>{
             ]
         })
         .populate('winner.movie')
+        .populate('host.user')
         .sort({
             data: -1
         })
-        console.log(polls[0])
         res.render('userProfile', {user, friends: undefined, polls})
     }catch(e){
         console.log(e)
@@ -42,7 +42,10 @@ Users.post('/:id/find', isLoggedIn, isUser, async (req: Request, res: Response)=
                 {'host.user': req.params.id},
                 {'voters.voter': {$in: [ req.params.id ]}}
             ]
-        }).sort({
+        })
+        .populate('winner.movie')
+        .populate('host.user')
+        .sort({
             finished: -1
         })
         res.render('userProfile', {user, friends, polls})

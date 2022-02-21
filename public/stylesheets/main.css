@@ -13,6 +13,9 @@ footer{
     text-align: center;
 }
 
+h1{
+    color: #212529;
+}
 .space-25{
     margin-top: 25px;
 }
@@ -69,6 +72,7 @@ footer{
     position: relative;
     left: 10%;
     width: 80%;
+    padding-bottom: 25px;
 }
 
 .movie-info-wrapper{
@@ -195,4 +199,31 @@ footer.position-bottom{
 .entry-with-code:visited{
     text-decoration: none;
     color: aliceblue;
+}
+
+
+  /* ///////////////////////////////////
+///////////////////////////////////
+        NOTIFICATIONS STYLES
+///////////////////////////////////
+/////////////////////////////////// */
+
+.notification-outter-wrapper{
+    min-height: calc(100vh - var(--navbar-height));
+    padding-top: 25px;
+}
+
+.notification{
+    background-color: whitesmoke;
+    border-radius: 8px;
+    padding: 8px;
+    margin: 25px;
+    align-items: center;
+}
+
+.wide-button{
+    display: block;
+    width: 80%;
+    margin: auto;
+    text-align: center;
 }

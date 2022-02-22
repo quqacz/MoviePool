@@ -28,7 +28,10 @@ Polls.get('/', isLoggedIn, (req: Request, res: Response)=>{
 Polls.get('/:id', isLoggedIn, validateEntry, async(req: Request, res: Response)=>{
     try{
         const poll = await Poll.findOne({_id: req.params.id})
+        .populate('host.user')
         if(!poll.voting){
+
+            // check if user is ovner of the room and fetching friends data
             if(res.locals.currentUser._id.toString() === poll.host.user._id.toString()){
                 const user = await User.findOne({
                     _id: res.locals.currentUser._id

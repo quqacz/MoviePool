@@ -1,78 +1,102 @@
 <%- include ('partials/htmlHeader') %>
-<div class="container" id='mainWrapper'>
-    <h1>POOL</h1>
-    <%if(!poll.voting){%>
-        <div id="addingMovies">
-            <h3><%= poll.entryCode %></h3>
-            <input type="text" placeholder="Searched movie" name="movieName" id="movieName"> 
-            <button type="button" onclick="getMovies()">Search</button> 
-            <%if(currentUser._id.toString() === poll.host.user._id.toString()){%>
-                <div class="container" id="inviteList">
-                    <%for(let i = 0; i < friendsToInvite.length; i++){%>
-                        <div>
-                            <p><%= friendsToInvite[i].nickname%></p>
-                            <button type="button" onclick="inviteFriend('<%=friendsToInvite[i]._id%>', '<%= poll._id%>', '<%= poll.host.user._id%>')">
-                                Invite
-                            </button>
-                        </div>
-                    <%}%>
+<div class="poll-room-wrapper gradient-custom">
+    <div class="width-60 poll-room-inner-wrapper" id='mainWrapper'>
+        <h1><%= poll.host.user.nickname%>'s POOL</h1>
+        <%if(!poll.voting){%>
+            <div id="addingMovies">
+                <h3>Entry Code: <%= poll.entryCode %></h3>
 
-                    <%for(let i = 0; i < invitedFriends.length; i++){%>
-                        <div>
-                            <p><%= invitedFriends[i].to.nickname%></p>
-                            <button type="button" disabled>
-                                <%if(invitedFriends[i].accepted){%>
-                                    <%='Accepted'%>
-                                <%}else{%>
-                                    <%= 'Pending'%>
-                                <%}%>
-                            </button>
-                        </div>
-                    <%}%>
+                <div id="statsWrapper" class="room-info-wrapper"></div>
+
+                <%if(currentUser._id.toString() === poll.host.user._id.toString()){%>
+                    <label for="inviteList" class="section-label">Friends</label>
+                    <div class="container" id="inviteList">
+                        <%for(let i = 0; i < friendsToInvite.length; i++){%>
+                            <div class="row data-row">
+                                <div class="col">
+                                    <strong><%= friendsToInvite[i].nickname%></strong>
+                                </div>
+                                <div class="col">
+                                    <button type="button" class="wide-button invitation-button" onclick="inviteFriend('<%=friendsToInvite[i]._id%>', '<%= poll._id%>', '<%= poll.host.user._id%>')">
+                                        <strong>Invite</strong>
+                                    </button>
+                                </div>
+                            </div>
+                        <%}%>
+    
+                        <%for(let i = 0; i < invitedFriends.length; i++){%>
+                            <div class="row data-row">
+                                <div class="col">
+                                    <strong><%= invitedFriends[i].to.nickname%></strong>
+                                </div>
+                                <div class="col text-align-center">
+                                    <strong>
+                                        <%if(invitedFriends[i].accepted){%>
+                                            <%='Accepted'%>
+                                        <%}else{%>
+                                            <%= 'Pending'%>
+                                        <%}%>
+                                    </strong>
+                                </div> 
+                            </div>
+                        <%}%>
+                    </div>
+                <%}%>
+                
+
+                <div class="col">
+                    <label for="movieName" class="form-label section-label">Search movie</label>
+                    <div class="input-group mb-3">
+                        <input type="text" name="movieName" id="movieName" class="form-control" placeholder="Title" aria-label="Movie Title" aria-describedby="movie-search">
+                        <button class="btn btn-outline-secondary" type="button" id="movie-search" onclick="getMovies()">Search</button>
+                    </div>
                 </div>
-            <%}%>
-            <div id="statsWrapper">
+
+
+                <div id="moviesWrapper" class="container whitesmoke-fill space-25 voting-layout"></div>
+
 
             </div>
-            <div id="moviesWrapper">
-
-            </div>
-        </div>
-        <script>
-            const parseDataFromSite = false;
-        </script>
-    <%}else{%>
-        <%if(!poll.finished){%>
-            <script>
-                const parseDataFromSite = true;
-            </script>
-        <%}else{%>
             <script>
                 const parseDataFromSite = false;
-            </script>  
+            </script>
+        <%}else{%>
+            <%if(!poll.finished){%>
+                <script>
+                    const parseDataFromSite = true;
+                </script>
+            <%}else{%>
+                <script>
+                    const parseDataFromSite = false;
+                </script>  
+            <%}%>
         <%}%>
-    <%}%>
-    <div id="voting">
-        <%for(let i = 0; i < moviesToVoteOn.length; i++){%>
-            <div>
-                <h3 class="movie_title"><%=moviesToVoteOn[i].Title%></h3>
-                <img src="<%=moviesToVoteOn[i].Poster%>" alt="<%=moviesToVoteOn[i].Title%>" class="movie_poster">
-                <p>Released <span class="movie_release"><%=moviesToVoteOn[i].Released%></span> Runtime <span class="movie_span"><%=moviesToVoteOn[i].Runtime%></span></p>
-                <p class="movie_plot"><%=moviesToVoteOn[i].Plot%></p>
-                <p class="movie_id"><%=moviesToVoteOn[i].imdbID%></p>
-            </div>
-        <%}%>
-        <%if(poll.winner.movie){%>
-            <div class="container">
-                <h1><%= poll.winner.movie.Title%></h1>
-                <h4>Released <%= poll.winner.movie.Released%>, rintime <%= poll.winner.movie.Runtime%></h4>
-                <img src="<%= poll.winner.movie.Poster%>" alt="<%= poll.winner.movie.Title%>">
-                <p><%= poll.winner.movie.Plot%></p>
-                <p>Score <%= poll.winner.movie.imdbRating%> from <%= poll.winner.movie.imdbVotes%> votes</p>
-            </div>
-        <%}%>
-    </div>
-</div>  
+        <div id="voting" class="container whitesmoke-fill space-25 voting-layout">
+            <%for(let i = 0; i < moviesToVoteOn.length; i++){%>
+                <div>
+                    <h3 class="movie_title"><%=moviesToVoteOn[i].Title%></h3>
+                    <img src="<%=moviesToVoteOn[i].Poster%>" alt="<%=moviesToVoteOn[i].Title%>" class="movie_poster">
+                    <p>Released <span class="movie_release"><%=moviesToVoteOn[i].Released%></span> Runtime <span class="movie_span"><%=moviesToVoteOn[i].Runtime%></span></p>
+                    <p class="movie_plot"><%=moviesToVoteOn[i].Plot%></p>
+                    <p class="movie_id"><%=moviesToVoteOn[i].imdbID%></p>
+                </div>
+            <%}%>
+            <%if(poll.winner.movie){%>
+                <div class="width-60 space-25 movie-data-wrapper">
+                    <h1><%= poll.winner.movie.Title%></h1>
+                    <h4>Released <%= poll.winner.movie.Released%>, rintime <%= poll.winner.movie.Runtime%></h4>
+                    <img src="<%= poll.winner.movie.Poster%>" alt="<%= poll.winner.movie.Title%>" class='movie-poster'>
+                    <p class="space-25"><%= poll.winner.movie.Plot%></p>
+                    <p>Score <%= poll.winner.movie.imdbRating%> from <%= poll.winner.movie.imdbVotes%> votes</p>
+                </div>
+            <%}%>
+        </div>
+    </div>  
+    <%- include ('partials/footer') %> 
+</div>
+
+
+
 <%- include ('partials/socketConnection') %>
 <%if(currentUser._id.toString() === poll.host.user._id.toString()){%>
     <script>
@@ -85,4 +109,5 @@
 <%}%>
 <script src="/js/renderer.js"></script>
 <script src="/js/pollRoomSocket.js"></script>
+
 <%- include ('partials/htmlFooter') %>

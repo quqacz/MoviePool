@@ -1,6 +1,6 @@
 <%- include ('partials/htmlHeader') %>
 <div class="poll-room-wrapper gradient-custom">
-    <div class="container" id='mainWrapper'>
+    <div class="width-60 poll-room-inner-wrapper" id='mainWrapper'>
         <h1><%= poll.host.user.nickname%>'s POOL</h1>
         <%if(!poll.voting){%>
             <div id="addingMovies">
@@ -53,7 +53,7 @@
                 </div>
 
 
-                <div id="moviesWrapper"></div>
+                <div id="moviesWrapper" class="container whitesmoke-fill space-25 voting-layout"></div>
 
 
             </div>
@@ -71,7 +71,7 @@
                 </script>  
             <%}%>
         <%}%>
-        <div id="voting">
+        <div id="voting" class="container whitesmoke-fill space-25 voting-layout">
             <%for(let i = 0; i < moviesToVoteOn.length; i++){%>
                 <div>
                     <h3 class="movie_title"><%=moviesToVoteOn[i].Title%></h3>
@@ -82,17 +82,17 @@
                 </div>
             <%}%>
             <%if(poll.winner.movie){%>
-                <div class="container">
+                <div class="width-60 space-25 movie-data-wrapper">
                     <h1><%= poll.winner.movie.Title%></h1>
                     <h4>Released <%= poll.winner.movie.Released%>, rintime <%= poll.winner.movie.Runtime%></h4>
-                    <img src="<%= poll.winner.movie.Poster%>" alt="<%= poll.winner.movie.Title%>">
-                    <p><%= poll.winner.movie.Plot%></p>
+                    <img src="<%= poll.winner.movie.Poster%>" alt="<%= poll.winner.movie.Title%>" class='movie-poster'>
+                    <p class="space-25"><%= poll.winner.movie.Plot%></p>
                     <p>Score <%= poll.winner.movie.imdbRating%> from <%= poll.winner.movie.imdbVotes%> votes</p>
                 </div>
             <%}%>
         </div>
     </div>  
-    <%- include ('partials/bottomFooter') %> 
+    <%- include ('partials/footer') %> 
 </div>
 
 

@@ -1,26 +1,34 @@
 <%- include ('partials/htmlHeader') %>
+<div class="notification-outter-wrapper gradient-custom">
     <div class="container">
         <h1>You have <%= currentUser.notifications %> notification<%=currentUser.notifications > 1 ? 's' : ''%></h1>
         <% for(let i = 0; i < nots.length; i++){%>
-            <div>
-                <h4>
-                    <strong><%=nots[i].from.nickname%></strong> sent you frind request 
-                    <a href="/user/<%=currentUser._id%>/accept/<%=nots[i].from._id%>">
+            <div class="row notification">
+                <div class="col">
+                    <strong><%=nots[i].from.nickname%></strong> sent you frind request!
+                </div>
+                <div class="col">
+                    <a href="/user/<%=currentUser._id%>/accept/<%=nots[i].from._id%> " class="entry-with-code wide-button">
                         <strong>ACCEPT</strong>
                     </a>
-                </h4>
+                </div>        
             </div>
         <%}%>
         <%for(let i = 0; i < invs.length; i++){%>
-            <div>
-                <h4>
-                    <strong><%=invs[i].from.nickname%></strong> invited you to poll room 
-                    <a href="/poll/<%=invs[i]._id%>/accept/<%=invs[i].to._id%>">
+            <div class="row notification">
+                <div class="col">
+                    <strong><%=invs[i].from.nickname%></strong> invited you to poll room!
+                </div>
+                <div class="col">
+                    <a href="/poll/<%=invs[i]._id%>/accept/<%=invs[i].to._id%>" class="entry-with-code wide-button">
                         <strong>JOIN POLL</strong>
                     </a>
-                </h4>
+                </div>
+                    
             </div>
         <%}%>
     </div>
-   
+</div>
+    
+<%- include ('partials/bottomFooter') %> 
 <%- include ('partials/htmlFooter') %>

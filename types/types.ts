@@ -18,15 +18,9 @@ interface FullMovieInfo extends ShortMovieInfo {
     Language: string,
     Country: string,
     Awards: string,
-    Ratings: Rating[],	
     Metascore: string,
     imdbRating: string,
     imdbVotes: string,
-    DVD: string,
-    BoxOffice: string,
-    Production: string,
-    Website: string,
-    Response: string,
 }
 
 type Rating = {

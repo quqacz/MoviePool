@@ -1,4 +1,296 @@
 *{
     margin: 0;
     padding: 0;
+    --navbar-height: 56px;
+    font-family: 'Roboto', sans-serif;
+}
+
+footer{
+    width: 100%;
+    height: 25px;
+    background-color: whitesmoke;
+    color: #212529;
+    text-align: center;
+}
+
+h1{
+    color: #212529;
+}
+.space-25{
+    margin-top: 25px;
+}
+
+.padding-0{
+    padding: 0 !important;
+}
+
+.text-align-center{
+    text-align: center;
+}
+
+.default-box-shadow{
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.whitesmoke-fill{
+    background-color: whitesmoke;
+}
+
+.gradient-custom {
+    /* fallback for old browsers */
+    background: rgb(221, 221, 221);
+  
+    /* Chrome 10-25, Safari 5.1-6 */
+    background: -webkit-linear-gradient(to right, rgb(235, 235, 235), rgb(212, 212, 212));
+  
+    /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    background: linear-gradient(to right, rgb(235, 235, 235), rgb(212, 212, 212))
+}
+
+/* ///////////////////////////////////
+///////////////////////////////////
+        MAIN PAGE STYLES
+///////////////////////////////////
+/////////////////////////////////// */
+
+.background-overlay{
+    position: absolute;
+    left: 0;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.85);
+}
+
+.upcoming-movies-header{
+    color: whitesmoke;
+}
+
+.movie-title{
+    color: #212529;
+}
+
+.all-movies-wrapper{
+    position: relative;
+    left: 10%;
+    width: 80%;
+    padding-bottom: 25px;
+}
+
+.movie-info-wrapper{
+    width: 70%;
+    position: relative;
+    left: 15%;
+    background-color: whitesmoke;
+    border-radius: 4px;
+    padding: 15px;
+}
+
+.align-center{
+    display: flex;
+    justify-content: center;
+}
+
+.width-60{
+    width: 60%;
+    position: relative;
+    left: 20%;
+}
+
+.movie-poster{
+    border-radius: 8px;
+    /* min-width: 30%;
+    max-width: 40%; */
+    height: auto;
+}
+
+.main-page-body{
+    height: 25vh;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+    background-size: cover;
+    /* filter: blur(4px) */
+}
+
+.movies-navigation-panel{
+    width: 10%;
+}
+
+.content-wrapper{
+    display: flex;
+    flex-flow: row nowrap;
+}
+
+/* ///////////////////////////////////
+///////////////////////////////////
+        LOGIN PAGE STYLES
+///////////////////////////////////
+/////////////////////////////////// */
+
+footer.position-bottom{
+    position: absolute;
+    bottom: 0;
+}
+
+.vh-without-nav{
+    height: calc(100vh - var(--navbar-height));
+}
+
+  /* ///////////////////////////////////
+///////////////////////////////////
+        USER PROFILE STYLES
+///////////////////////////////////
+/////////////////////////////////// */
+
+.all-wrapper{
+    position: relative;
+    top: 0;
+    width: 100%;
+    padding-top: 25px;
+}
+
+.section-label{
+    font-size: 1.25rem;
+}
+
+.user-name{
+    font-size: 2rem;
+}
+
+#friend-list{
+    transition: 1s;
+}
+
+.friends-button{
+    background-color: inherit;
+    border: none;
+    font-size: 2rem;
+}
+
+.wrapped{
+    height: 0;
+    display: none;
+}
+
+.friend-div{
+    align-items: center;
+    padding-left: 8px;
+    border-radius: 8px;
+}
+
+.poll-info{
+    padding: 16px;
+    border-radius: 8px;
+    margin: 25px;
+}
+
+.entry-with-code{
+    padding: 4px 8px;
+    border-radius: 4px;
+    text-decoration: none;
+    background-color: #212529;
+    color: aliceblue;
+}
+
+.entry-with-code:hover{
+    text-decoration: none;
+    color: whitesmoke;
+}
+
+.entry-with-code:visited{
+    text-decoration: none;
+    color: aliceblue;
+}
+
+
+  /* ///////////////////////////////////
+///////////////////////////////////
+        NOTIFICATIONS STYLES
+///////////////////////////////////
+/////////////////////////////////// */
+
+.notification-outter-wrapper{
+    min-height: calc(100vh - var(--navbar-height));
+    padding-top: 25px;
+}
+
+.notification{
+    background-color: whitesmoke;
+    border-radius: 8px;
+    padding: 8px;
+    margin: 25px;
+    align-items: center;
+}
+
+.wide-button{
+    display: block;
+    width: 80%;
+    margin: auto;
+    text-align: center;
+}
+
+  /* ///////////////////////////////////
+///////////////////////////////////
+        POLL ROOM STYLES
+///////////////////////////////////
+/////////////////////////////////// */
+
+.poll-room-wrapper{
+    /* min-height: calc(100vh - var(--navbar-height)); */
+    padding-top: 25px;
+}
+
+.poll-room-inner-wrapper{
+    min-height: calc(100vh - var(--navbar-height));
+}
+
+.room-info-wrapper{
+    background-color: whitesmoke;
+    border-radius: 8px;
+    padding: 16px;
+    margin: 25px;
+}
+
+.invitation-button{
+    background-color: #212529;
+    color: aliceblue;
+    border: none;
+    border-radius: 4px;
+}
+
+.data-row{
+    border-radius: 4px;
+    background-color: whitesmoke;
+    padding: 8px;
+    margin: 16px;
+}
+
+.start-button{
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    text-align: center;
+    background-color: #b4b4b4;
+    color: whitesmoke;
+}
+
+.start-button.active{
+    background-color: #212529;
+}
+
+.voting-layout{
+    padding: 32px;
+    border-radius: 8px;
+    margin-bottom: 25px;
+}
+
+.button-group{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.movie-data-wrapper{
+    align-items: center;
+    text-align: center;
+    justify-content: center;
 }

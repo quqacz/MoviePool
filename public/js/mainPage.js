@@ -41,7 +41,6 @@ document.addEventListener('scroll', function () {
 function wrap(movieId, buttonId){
     let movieInfo = document.querySelector(`#${movieId}`)
     let button = document.querySelector(`#${buttonId}`)
-    console.log(movieInfo)
     if(button.attributes.clicked.nodeValue === 'false'){
         button.classList.remove('bi-arrow-bar-down')
         button.classList.add('bi-arrow-bar-up')

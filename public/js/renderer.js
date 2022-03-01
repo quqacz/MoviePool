@@ -25,6 +25,7 @@ function inviteFriend(friendId, roomId, hostId){
 }
 
 function renderMovies(movies){
+    console.log(movies[0])
     for(let i = 0; i < movies.length; i++){
         const wrap = renderElement('div', moviesWrapper, {},
             {class: 'width-60 space-25 movie-data-wrapper'})
@@ -32,6 +33,23 @@ function renderMovies(movies){
         renderElement('h4', wrap, {innerHTML: movies[i].Year})
         const div = renderElement('div', wrap)
         renderElement('img', div, {}, {src: movies[i].Poster, class: 'movie-poster'})
+        renderElement('div', wrap, {
+            id: `movie${i}`},
+            {class: 'p-2 width-60 wrapped space-25'})
+        let infoWrapper = renderElement('div', wrap, {}, {class: 'text-align-center'})
+        let button = renderElement('button', infoWrapper,{
+            onclick: function(){socket.emit('fetchFullMovieDetails', movies[i].imdbID, `movie${i}`, `wrap${i}`)}
+        },{
+            class: 'friends-button'
+        })
+        renderElement('i', button, {
+            id: `wrap${i}`
+        }, {
+            class: 'bi bi-arrow-bar-down',
+            clicked: 'false'
+        })
+
+
         renderElement('button', wrap, 
             {type: 'button', innerHTML: 'Add to queue', onclick: function(){socket.emit('addToQueue', movies[i].imdbID)}},
             {class: 'start-button active space-25'})
@@ -248,6 +266,9 @@ function renderElement(element, parent = undefined, options = {}, attributes = {
                 for(let j = 0; j < classes.length; j++){
                     el.classList.add(classes[j])
                 }
+                break
+            default:
+                el.setAttribute(attributesKeys[i], attributes[attributesKeys[i]])
                 break
         }
     }

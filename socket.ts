@@ -97,6 +97,13 @@ exports = module.exports = function(io: Socket){
                 })
         })
 
+        socket.on('fetchFullMovieDetails', (id: string, elementId: string, buttonId: string)=>{
+            axios.get('http://www.omdbapi.com/?i='+id+'&type=movie&apikey='+process.env.MOVIE_API_KEY)
+                .then((res: AxiosResponse)=>{
+                    socket.emit('fetchFullMovieDetails', JSON.stringify(res.data), elementId, buttonId )
+                })
+        })
+
         socket.on('sendRoomInvite', async(friendId: string, roomId: string, hostId: string)=>{
             try{
                 RoomInvite.findOne({room: roomId, to: friendId}, async (err:any, invite:any)=>{

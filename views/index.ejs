@@ -13,10 +13,23 @@
                             <img src="<%= movies[i].Poster%>" alt="<%=movies[i].Title%> poster" class="movie-poster default-box-shadow">
                         </div>
                         <div class="p-2 padding-0 align-center">
-                            <h4><%= movies[i].Year%></h4>
+                            <h4><%= movies[i].Released !== 'N/A' ? movies[i].Released : movies[i].Year%></h4>
                         </div>
+
                         <div class="p-2 width-60 align-center text-align-center"><%= movies[i].Plot%></div>
                         
+                        <div class="p-2 width-60 wrapped space-25" id="movieInfo<%=i%>">
+                            <p class="text-align-center">Movie Info</p>
+                            <p><strong>Runtime: </strong><%= movies[i].Runtime !== 'N/A' ? movies[i].Runtime : 'No data'%></p>
+                            <p><strong>Genre: </strong><%= movies[i].Genre !== 'N/A' ? movies[i].Genre : 'No data'%></p>
+                            <p><strong>Language: </strong><%= movies[i].Language !== 'N/A' ? movies[i].Language : 'No data'%></p>
+                            <p><strong>Director: </strong><%= movies[i].Director !== 'N/A' ? movies[i].Director : 'No data'%></p>
+                            <p><strong>Writer: </strong><%= movies[i].Writer !== 'N/A' ? movies[i].Writer : 'No data'%></p>
+                            <p><strong>Actors: </strong><%= movies[i].Actors !== 'N/A' ? movies[i].Actors : 'No data'%></p>
+                        </div>
+                        <div class="text-align-center">
+                            <button class="friends-button" onclick="wrap('movieInfo<%=i%>', 'wrappButton<%=i%>')"><i class="bi bi-arrow-bar-down" id="wrappButton<%=i%>" clicked="false"></i></button>
+                        </div>
                     </div>
                 <%}%>
             </div>  

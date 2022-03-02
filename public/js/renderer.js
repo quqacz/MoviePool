@@ -184,8 +184,31 @@ function renderVotingQueue(movies){
         {class: 'width-60 space-25 movie-data-wrapper'})
         renderElement('h3', wrap, {textContent: movies[i].Title})
         renderElement('img', wrap, {}, {src: movies[i].Poster !== 'N/A' ? movies[i].Poster : 'https://res.cloudinary.com/dbns8eb5n/image/upload/c_scale,w_300/v1646227803/placeholder_hgqqdk.png', class: 'movie-poster'})
-        renderElement('p', wrap, {textContent: `Released: ${movies[i].Released}, Runtime: ${movies[i].Span}`})
+        renderElement('p', wrap, {innerHTML: `<strong>Released:</strong> ${movies[i].Released}, <strong>Runtime:</strong> ${movies[i].Span}`})
+        
+        let GenreWrap = renderElement('p', wrap)
+        renderElement('strong', GenreWrap, {textContent: 'Genre: '})
+        renderElement('span', GenreWrap, {textContent: movies[i].Genre !== 'N/A' ? movies[i].Genre : 'No data'})
+
+        let LanguageWrap = renderElement('p', wrap)
+        renderElement('strong', LanguageWrap, {textContent: 'Language: '})
+        renderElement('span', LanguageWrap, {textContent: movies[i].Language !== 'N/A' ? movies[i].Language : 'No data'})
+
+        let DirectorWrap = renderElement('p', wrap)
+        renderElement('strong', DirectorWrap, {textContent: 'Director: '})
+        renderElement('span', DirectorWrap, {textContent: movies[i].Director !== 'N/A' ? movies[i].Director : 'No data'})
+
+        let WriterWrap = renderElement('p', wrap)
+        renderElement('strong', WriterWrap, {textContent: 'Writer: '})
+        renderElement('span', WriterWrap, {textContent: movies[i].Writer !== 'N/A' ? movies[i].Writer : 'No data'})
+
+        let ActorsWrap = renderElement('p', wrap)
+        renderElement('strong', ActorsWrap, {textContent: 'Actors: '})
+        renderElement('span', ActorsWrap, {textContent: movies[i].Actors !== 'N/A' ? movies[i].Actors : 'No data'})
+
         renderElement('p', wrap, {textContent: movies[i].Plot})
+
+
         const innerWrap = renderElement('div', wrap, {}, 
             {class: 'container button-group btn-toolbar'})
         renderElement('button', innerWrap, 
@@ -296,7 +319,7 @@ function parseMoviesData(){
             Country: country[i].textContent,
             Director: director[i].textContent,
             Genre: genre[i].textContent,
-            language: language[i].textContent,
+            Language: language[i].textContent,
             Writer: writer[i].textContent
         })
     }

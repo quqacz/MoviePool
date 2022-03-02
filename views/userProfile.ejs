@@ -70,7 +70,7 @@
                     <span><strong>Poll started by <%= user._id.toString() === polls[i].host.user._id.toString() ? 'You' : polls[i].host.user.nickname%></strong></span>
                     <p>Started: <%= polls[i].data.toDateString()%></p>
 
-                    <div class="row">
+                    <div class="row  space-25">
                         <div class="col">
                             <%if(!polls[i].finished){%>
                                 <a href="/poll/<%=polls[i]._id%>" class="entry-with-code"><strong>Join Room</strong></a>

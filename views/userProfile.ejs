@@ -75,7 +75,7 @@
                             <%if(!polls[i].finished){%>
                                 <a href="/poll/<%=polls[i]._id%>" class="entry-with-code"><strong>Join Room</strong></a>
                             <%}%>
-                            <div class="space-25">
+                            <div>
                                 <p><strong>Number of movies in queue:</strong> <%= polls[i].movies.length%></p>
                                 <p><strong>Number of voters:</strong> <%= polls[i].voters.length + 1%></p>
                             </div>

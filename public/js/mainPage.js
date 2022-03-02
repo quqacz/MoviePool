@@ -42,13 +42,13 @@ function wrap(movieId, buttonId){
     let movieInfo = document.querySelector(`#${movieId}`)
     let button = document.querySelector(`#${buttonId}`)
     if(button.attributes.clicked.nodeValue === 'false'){
-        button.classList.remove('bi-arrow-bar-down')
-        button.classList.add('bi-arrow-bar-up')
+        button.classList.remove('bi-info-square')
+        button.classList.add('bi-info-square-fill')
         movieInfo.classList.remove('wrapped')
         button.attributes.clicked.nodeValue = 'true'
     }else{
-        button.classList.remove('bi-arrow-bar-up')
-        button.classList.add('bi-arrow-bar-down')
+        button.classList.remove('bi-info-square-fill')
+        button.classList.add('bi-info-square')
         movieInfo.classList.add('wrapped')
         button.attributes.clicked.nodeValue = 'false'
     }

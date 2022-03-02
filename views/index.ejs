@@ -10,7 +10,7 @@
                             <h1 class="movie-title"><%= movies[i].Title%></h1>
                         </div>
                         <div class="p-2 align-center">
-                            <img src="<%= movies[i].Poster%>" alt="<%=movies[i].Title%> poster" class="movie-poster default-box-shadow">
+                            <img src="<%= movies[i].Poster !== 'N/A' ? movies[i].Poster : 'https://res.cloudinary.com/dbns8eb5n/image/upload/c_scale,w_300/v1646227803/placeholder_hgqqdk.png' %> " alt="<%=movies[i].Title%> poster" class="movie-poster default-box-shadow">
                         </div>
                         <div class="p-2 padding-0 align-center">
                             <h4><%= movies[i].Released !== 'N/A' ? movies[i].Released : movies[i].Year%></h4>
@@ -28,7 +28,7 @@
                             <p><strong>Actors: </strong><%= movies[i].Actors !== 'N/A' ? movies[i].Actors : 'No data'%></p>
                         </div>
                         <div class="text-align-center">
-                            <button class="friends-button" onclick="wrap('movieInfo<%=i%>', 'wrappButton<%=i%>')"><i class="bi bi-arrow-bar-down" id="wrappButton<%=i%>" clicked="false"></i></button>
+                            <button class="friends-button" onclick="wrap('movieInfo<%=i%>', 'wrappButton<%=i%>')"><i class="bi bi-info-square" id="wrappButton<%=i%>" clicked="false"></i></button>
                         </div>
                     </div>
                 <%}%>

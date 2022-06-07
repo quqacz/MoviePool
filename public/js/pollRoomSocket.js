@@ -45,5 +45,9 @@ socket.on('waitingForResaults', ()=>{
 
 socket.on('sendWinnerInfo', (movie)=>{
     renderWinnerInfo(movie)
-    console.log(movie)
+})
+
+socket.on('fetchFullMovieDetails', (data, infoId, buttonId)=>{
+    let movie = JSON.parse(data)
+    renderMoreInfo(movie, infoId, buttonId)
 })

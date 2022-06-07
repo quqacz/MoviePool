@@ -60,16 +60,9 @@ Polls.get('/:id', isLoggedIn, validateEntry, async(req: Request, res: Response)=
         }else if(poll.voting && !poll.finished){
             await poll.populate('movies.movie')
             let moviesToSend = []
-            for(let i = 0; i < poll.movies.length; i++){
-                moviesToSend.push({
-                    Title: poll.movies[i].movie.Title,
-                    Released: poll.movies[i].movie.Released,
-                    Runtime: poll.movies[i].movie.Runtime,
-                    Plot: poll.movies[i].movie.Plot,
-                    Poster: poll.movies[i].movie.Poster,
-                    imdbID: poll.movies[i].movie.imdbID
-                })
-            }
+                for(let i = 0; i < poll.movies.length; i++){
+                    moviesToSend.push(poll.movies[i].movie)
+                }
             res.render('poll', {poll, moviesToVoteOn: moviesToSend})
         }else if(poll.finished){
             await poll.populate('winner.movie')

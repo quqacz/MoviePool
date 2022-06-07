@@ -97,6 +97,13 @@ exports = module.exports = function(io: Socket){
                 })
         })
 
+        socket.on('fetchFullMovieDetails', (id: string, elementId: string, buttonId: string)=>{
+            axios.get('http://www.omdbapi.com/?i='+id+'&type=movie&apikey='+process.env.MOVIE_API_KEY)
+                .then((res: AxiosResponse)=>{
+                    socket.emit('fetchFullMovieDetails', JSON.stringify(res.data), elementId, buttonId )
+                })
+        })
+
         socket.on('sendRoomInvite', async(friendId: string, roomId: string, hostId: string)=>{
             try{
                 RoomInvite.findOne({room: roomId, to: friendId}, async (err:any, invite:any)=>{
@@ -217,20 +224,12 @@ exports = module.exports = function(io: Socket){
             try{
                 const poll = await Poll.findOne({ _id: socket.roomId })
                     .populate('movies.movie')
-                // on objects remain
-                // Title, Realeased, Runtime, Plot, Poster, imdbId
-
+                
                 let moviesToSend = []
                 for(let i = 0; i < poll.movies.length; i++){
-                    moviesToSend.push({
-                        Title: poll.movies[i].movie.Title,
-                        Released: poll.movies[i].movie.Released,
-                        Runtime: poll.movies[i].movie.Runtime,
-                        Plot: poll.movies[i].movie.Plot,
-                        Poster: poll.movies[i].movie.Poster,
-                        imdbID: poll.movies[i].movie.imdbID
-                    })
+                    moviesToSend.push(poll.movies[i].movie)
                 }
+
                 poll.voting = true
 
                 // loop to change status of connectet nodes

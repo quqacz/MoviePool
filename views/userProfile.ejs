@@ -70,20 +70,20 @@
                     <span><strong>Poll started by <%= user._id.toString() === polls[i].host.user._id.toString() ? 'You' : polls[i].host.user.nickname%></strong></span>
                     <p>Started: <%= polls[i].data.toDateString()%></p>
 
-                    <div class="row">
+                    <div class="row  space-25">
                         <div class="col">
                             <%if(!polls[i].finished){%>
                                 <a href="/poll/<%=polls[i]._id%>" class="entry-with-code"><strong>Join Room</strong></a>
                             <%}%>
-                            <div class="space-25">
+                            <div>
                                 <p><strong>Number of movies in queue:</strong> <%= polls[i].movies.length%></p>
-                                <p><strong>Number of voters:</strong> <%= polls[i].voters.length%></p>
+                                <p><strong>Number of voters:</strong> <%= polls[i].voters.length + 1%></p>
                             </div>
                         </div>
                         
                         <%if(polls[i].finished){%>
                             <div class="col">
-                                <p class="section-label">Winner: <%=polls[i].winner.movie.Title%></p>
+                                <p class="section-label"><strong><%=polls[i].winner.movie.Title%></strong></p>
                                 <p><strong>Released:</strong> <%=polls[i].winner.movie.Released%></p>
                                 <p><strong>Runtime:</strong> <%=polls[i].winner.movie.Runtime%></p>
                                 <p><strong>Language:</strong> <%=polls[i].winner.movie.Language%></p>
@@ -92,7 +92,7 @@
                                 <p><strong>Rating:</strong> <%=polls[i].winner.movie.imdbRating%> from <%=polls[i].winner.movie.imdbVotes%> votes</p>
                             </div>
                             <div class="col">
-                                <img src="<%=polls[i].winner.movie.Poster%>" alt="<%=polls[i].winner.movie.Title%>">
+                                <img src="<%=polls[i].winner.movie.Poster%>" alt="<%=polls[i].winner.movie.Title%>" class="movie-poster">
                             </div>
                         <%}%>
                     </div>

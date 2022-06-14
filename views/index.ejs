@@ -19,7 +19,7 @@
                         <div class="p-2 width-60 align-center text-align-center"><%= movies[i].Plot%></div>
                         
                         <div class="p-2 width-60 wrapped space-25" id="movieInfo<%=i%>">
-                            <p class="text-align-center">Movie Info</p>
+                            <p class="text-align-center"><strong>Movie Info</strong></p>
                             <p><strong>Runtime: </strong><%= movies[i].Runtime !== 'N/A' ? movies[i].Runtime : 'No data'%></p>
                             <p><strong>Genre: </strong><%= movies[i].Genre !== 'N/A' ? movies[i].Genre : 'No data'%></p>
                             <p><strong>Language: </strong><%= movies[i].Language !== 'N/A' ? movies[i].Language : 'No data'%></p>

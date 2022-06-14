@@ -21,8 +21,6 @@ async function validateCodeEntry(req: Request, res: Response, next: NextFunction
         let { entryCode } = req.body
         let poll = await Poll.findOne({entryCode})
         if(poll){
-            // TODO prevent multiple entries by the same person
-            // FIX  THAT FOR FUCKS SAKE
             poll.voters.push({voter: res.locals.currentUser})
             poll.save()
             return res.redirect('/poll/'+poll._id)

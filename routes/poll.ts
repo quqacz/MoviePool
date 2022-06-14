@@ -2,14 +2,16 @@ import express, {Request, Response, NextFunction } from 'express'
 import { isLoggedIn } from '../middleware/permitions'
 import { validateEntry, validateCodeEntry } from '../middleware/pollRooms';
 
-const Polls = express()
+const Polls = express.Router()
 var shortHash = require('short-hash');
 
 const Poll = require('../models/poll')
 const User = require('../models/user')
 const RoomInvite = require('../models/roomInvite')
 
-Polls.get('/', isLoggedIn, (req: Request, res: Response)=>{
+Polls.use(isLoggedIn)
+
+Polls.get('/', (req: Request, res: Response)=>{
     try{
         let hash = Date.now().toString()
         let entryCode = shortHash(hash)
@@ -25,13 +27,12 @@ Polls.get('/', isLoggedIn, (req: Request, res: Response)=>{
     }
 })
 
-Polls.get('/:id', isLoggedIn, validateEntry, async(req: Request, res: Response)=>{
+Polls.get('/:id', validateEntry, async(req: Request, res: Response)=>{
     try{
         const poll = await Poll.findOne({_id: req.params.id})
         .populate('host.user')
         if(!poll.voting){
 
-            // check if user is ovner of the room and fetching friends data
             if(res.locals.currentUser._id.toString() === poll.host.user._id.toString()){
                 const user = await User.findOne({
                     _id: res.locals.currentUser._id
@@ -74,7 +75,7 @@ Polls.get('/:id', isLoggedIn, validateEntry, async(req: Request, res: Response)=
     }
 })
 
-Polls.post('/join/code', isLoggedIn, validateCodeEntry, (req: Request, res: Response)=>{})
+Polls.post('/join/code', validateCodeEntry, (req: Request, res: Response)=>{})
 
 Polls.get('/:invId/accept/:to', isLoggedIn, async(req: Request, res: Response)=>{
     try{

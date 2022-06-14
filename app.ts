@@ -102,6 +102,7 @@ app.get('/', async(req: Request, res: Response)=>{
     if(requestTime !== MoviesCash.lastFetched || !MoviesCash.moviesDetails.length || MoviesCash.moviesDetails[0] === ''){
         let ids = await getUpcomingMovies();
         MoviesCash.moviesDetails.length = 0;
+        MoviesCash.lastFetched = requestTime;
         for(let i = 0; i < 10; i++){
             let id = ids[i].id.split('/');
             let parsedId = id[2];

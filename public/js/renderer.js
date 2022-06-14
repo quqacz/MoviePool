@@ -47,8 +47,6 @@ function renderMovies(movies){
             class: 'bi bi-info-square',
             clicked: 'false'
         })
-
-
         renderElement('button', wrap, 
             {type: 'button', innerHTML: 'Add to queue', onclick: function(){socket.emit('addToQueue', movies[i].imdbID)}},
             {class: 'start-button active space-25'})
@@ -334,11 +332,9 @@ function renderElement(element, parent = undefined, options = {}, attributes = {
     const el = document.createElement(element)
     const optionsKeys = Object.keys(options)
     const attributesKeys = Object.keys(attributes)
-
     for(let i = 0; i < optionsKeys.length; i++){
         el[optionsKeys[i]] = options[optionsKeys[i]]
     }
-
     for(let i = 0; i < attributesKeys.length; i++){
         switch(attributesKeys[i]){
             case 'src':
@@ -355,9 +351,7 @@ function renderElement(element, parent = undefined, options = {}, attributes = {
                 break
         }
     }
-
     if(parent)
         parent.appendChild(el)
-        
     return el
 }

@@ -8,6 +8,7 @@
   "main": "app.js",
   "scripts": {
     "run-dev": "nodemon app.ts",
+    "build-dev": "npm install && cd ./public && npm install",
     "build": "npm install && cd ./public && npm install && cd .. && tsc",
     "start": "node app.js"
   },

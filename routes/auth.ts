@@ -2,7 +2,7 @@ import express, {Request, Response, NextFunction } from 'express'
 import { loginValidator, registerValidator } from '../middleware/formsValidator'
 
 const passport = require('passport')
-const Auth = express()
+const Auth = express.Router()
 
 const User = require('../models/user')
 
